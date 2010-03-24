@@ -71,19 +71,19 @@ int LoginMenu(void)
             FILE *UserFile;
             char name[50];
             char pass[15];
-            UserFile = fopen("UserFile.txt","+r");
+            UserFile = fopen("./DataFiles/UserFile.txt","+r");
             if(UserFile)
             {
-                while(UserFile!=eof)
+                while(UserFile!=NULL)
                 {
-                    fscanf("UserFile.txt,"%s\t%s",name,pass);
+                    fscanf(UserFile,"%s\t%s",name,pass);
                     if(strcmp(name,AdminName)==0 && strcmp(pass,Password)==0)
                     {
                         return USER_BASIC;
                     }
                 }
+                fclose(UserFile);
             }
-            return USER_BASIC;
         }
         gotoxy(20,3);
         printf("Failed: Incorrect username or password");
