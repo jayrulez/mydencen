@@ -13,18 +13,70 @@
 #include <time.h>
 #include <windows.h>
 
+//Admin Login
+#define AdminName "administrator"
+#define AdminPassword "12345"
+
+//User Type
+#define USER_ADMIN 0x1001
+#define USER_BASIC 0x1002
+
+
 //Welcome
-void WelcomeScreen();
+void WelcomeScreen(void);
+//Login
+int LoginMenu(void);
 //Tools
 void gotoxy(int, int);
 
+
 int main()
 {
+    LoginMenu();
     getch();
     return 0;
 }
-void WelcomeScreen()
+void WelcomeScreen(void)
 {
+}
+/*
+ * Login Menu
+ * void
+ * return boolean value
+*/
+int LoginMenu(void)
+{
+    char UserName[50];
+    char Password[15];
+
+    do{
+        system("cls");
+        gotoxy(20,8);
+        printf("UserName:");
+        gotoxy(20,10);
+        printf("Password:");
+        gotoxy(30,8);
+        scanf("%s",UserName);
+        gotoxy(30,10);
+        scanf("%s",Password);
+
+        if(strcmp(UserName,AdminName)==0)
+        {
+            gotoxy(25,3);
+            printf("Login Successfull!");
+            return USER_ADMIN;
+        }
+        else
+        {
+            FILE *UserFile;
+            UserFile = fopen("UserFile.txt","+r");
+            return USER_BASIC;
+        }
+        gotoxy(20,3);
+        printf("Failed: Incorrect username or password");
+        getch();
+    }while(true);
+    return 0;
 }
 /*
  * Positions cursor in the cosole
