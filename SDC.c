@@ -69,7 +69,20 @@ int LoginMenu(void)
         else
         {
             FILE *UserFile;
+            char name[50];
+            char pass[15];
             UserFile = fopen("UserFile.txt","+r");
+            if(UserFile)
+            {
+                while(UserFile!=eof)
+                {
+                    fscanf("UserFile.txt,"%s\t%s",name,pass);
+                    if(strcmp(name,AdminName)==0 && strcmp(pass,Password)==0)
+                    {
+                        return USER_BASIC;
+                    }
+                }
+            }
             return USER_BASIC;
         }
         gotoxy(20,3);
