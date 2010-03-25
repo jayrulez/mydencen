@@ -21,6 +21,12 @@
 #define USER_ADMIN 0x1001
 #define USER_BASIC 0x1002
 
+typedef struct  {
+                int Regnum[8], PhoneNum[10];
+                char Fname[15],Lname[20],Address[20];
+                }Patient;
+//structure containing student information
+
 
 //Welcome
 void WelcomeScreen(void);
