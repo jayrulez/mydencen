@@ -64,15 +64,15 @@ void WelcomeScreen(void);
 int LoginMenu(void);
 //Tools
 void gotoxy(int, int);
-<<<<<<< .mine
 void ScreenFrame(void);
 //Services
 void DefaultService(void);
-=======
 //Functions
-void GenIncomeReport (void); void DocIncomeReport (void);
-void DocReport (void); void PatientNotiReport (void);
->>>>>>> .r11
+void GenIncomeReport (void);
+void DocIncomeReport (void);
+void DocReport (void);
+void PatientNotiReport (void);
+
 
 int main()
 {
