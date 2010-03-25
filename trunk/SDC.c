@@ -21,11 +21,41 @@
 #define USER_ADMIN 0x1001
 #define USER_BASIC 0x1002
 
-typedef struct  {
-                int Regnum[8], PhoneNum[10];
-                char Fname[15],Lname[20],Address[20];
-                }Patient;
-//structure containing patient information
+typedef struct PATIENT
+{
+    int Id;
+    char Fname[20];
+    char Lname[20];
+    char Address[20];
+    int Phone;
+    char LastTreatment[8];
+    char Allergies[50];
+    char NextAppDate[10];
+    float CardBalance;
+}Patient;
+
+typedef struct PAYMENT
+{
+    float cash;
+    float card;
+}Payment;
+
+typedef struct VISIT
+{
+    int PatientID;
+    int DoctorID;
+    int Procedure;
+    Payment VisitPayment;
+}Visit;
+
+typedef struct DOCTOR
+{
+    int Id;
+    char Fname[20];
+    char Lname[20];
+    int Phone;
+    char Specialty[20];
+}Doctor;
 
 
 //Welcome
@@ -34,10 +64,15 @@ void WelcomeScreen(void);
 int LoginMenu(void);
 //Tools
 void gotoxy(int, int);
+<<<<<<< .mine
+void ScreenFrame(void);
+//Services
+void DefaultService(void);
+=======
 //Functions
 void GenIncomeReport (void); void DocIncomeReport (void);
 void DocReport (void); void PatientNotiReport (void);
-
+>>>>>>> .r11
 
 int main()
 {
@@ -59,7 +94,7 @@ int LoginMenu(void)
     char Password[15];
 
     do{
-        system("cls");
+        DefaultService();
         gotoxy(20,8);
         printf("UserName:");
         gotoxy(20,10);
@@ -137,4 +172,35 @@ void gotoxy(int x, int y)
     handle = GetStdHandle(STD_OUTPUT_HANDLE);
     //set the cursor position based on the above x and y values
     SetConsoleCursorPosition(handle,CursorCoord);
+}
+void ScreenFrame(void)
+{
+    for(int x=0;x<80;x++)
+    {
+        gotoxy(x,0);
+        printf("%c",(unsigned char) 205);
+        gotoxy(x,24);
+        printf("%c",(unsigned char) 205);
+    }
+    for(int y=0;y<24;y++)
+    {
+        gotoxy(0,y);
+        printf("%c",(unsigned char) 186);
+        gotoxy(79,y);
+        printf("%c",(unsigned char) 186);
+    }
+    gotoxy(0,0);
+    printf("%c",(unsigned char)201);
+    gotoxy(79,0);
+    printf("%c",(unsigned char)187);
+    gotoxy(0,24);
+    printf("%c",(unsigned char)200);
+    gotoxy(79,24);
+    printf("%c",(unsigned char)188);
+    gotoxy(0,0);
+}
+void DefaultService(void)
+{
+    system("cls");
+    ScreenFrame();
 }
