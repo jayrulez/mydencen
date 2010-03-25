@@ -34,6 +34,9 @@ void WelcomeScreen(void);
 int LoginMenu(void);
 //Tools
 void gotoxy(int, int);
+//Functions
+void GenIncomeReport (void); void DocIncomeReport (void);
+void DocReport (void); void PatientNotiReport (void);
 
 
 int main()
@@ -97,6 +100,26 @@ int LoginMenu(void)
     }while(true);
     return 0;
 }
+
+
+void GenIncomeReport (void)
+{
+}
+
+void DocIncomeReport (void)
+{
+}
+
+void DocReport (void)
+{
+}
+
+void PatientNotiReport (void)
+{
+}
+
+
+
 /*
  * Positions cursor in the cosole
  * "x" is the x cordinates. "y" y cordinate
