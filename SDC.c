@@ -14,7 +14,7 @@
 #include <windows.h>
 
 //Admin Login
-#define AdminName "administrator"
+#define AdminName "admin"
 #define AdminPassword "12345"
 
 //User Type
@@ -60,14 +60,21 @@ typedef struct DOCTOR
 
 //Welcome
 void WelcomeScreen(void);
+
+//Main Menu
+void MainMenu(void);
+
 //Login
 int LoginMenu(void);
+
 //Tools
 void gotoxy(int, int);
 void ScreenFrame(void);
+
 //Services
 void DefaultService(void);
-//Functions
+
+//Reports
 void GenIncomeReport (void);
 void DocIncomeReport (void);
 void DocReport (void);
@@ -77,6 +84,7 @@ void PatientNotiReport (void);
 int main()
 {
     LoginMenu();
+    MainMenu();
     getch();
     return 0;
 }
@@ -136,6 +144,22 @@ int LoginMenu(void)
     return 0;
 }
 
+void MainMenu(void)
+{
+    DefaultService();
+    gotoxy(20,8);
+    printf("menu1");
+    gotoxy(29,8);
+    printf("menu2");
+    gotoxy(38,8);
+    printf("menu3");
+    gotoxy(20,13);
+    printf("menu4");
+    gotoxy(29,13);
+    printf("menu5");
+    gotoxy(38,13);
+    printf("menu6");
+}
 
 void GenIncomeReport (void)
 {
