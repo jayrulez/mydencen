@@ -155,6 +155,9 @@ void MainMenu(void)
 {
     DefaultService();
 
+    gotoxy(35,8);
+    printf("MAIN MENU");
+
     gotoxy(19,13);
     printf("[1]");
     gotoxy(16,14);
