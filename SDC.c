@@ -66,11 +66,12 @@ void WelcomeScreen(void);
 
 // Menus
 void ShowMainMenu(void);
-void MainMenuController(char);
-
-void MainMenu(void);
-void Reports(void);
-void Patients(void);
+int MainMenuController(char);
+//Report Menu
+void ShowReportsMenu(void);
+//PatientsMenu
+void ShowPatientsMenu(void);
+//DoctorReportMenu
 void DocReportSelect(void);
 
 
@@ -97,7 +98,9 @@ int main()
 {
     LoginMenu();
     ShowMainMenu();
-    MainMenuController(OptionDriver(30,18,NUMERIC));
+    do
+    {
+    }while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
     return 0;
 }
 void WelcomeScreen(void)
@@ -167,7 +170,6 @@ char OptionDriver(int x,int y,int OptionType)
         {
             if(isdigit(option))
             {
-                printf("%c",option);
                 break;
             }
         }
@@ -175,7 +177,6 @@ char OptionDriver(int x,int y,int OptionType)
         {
             if(isalpha(option))
             {
-                printf("%c",option);
                 break;
             }
         }
@@ -209,17 +210,28 @@ void ShowMainMenu(void)
     gotoxy(61,14);
     printf("EXIT");
 }
-void MainMenuController(char option)
+int MainMenuController(char option)
 {
     switch(option)
     {
         case '1':
+            ShowPatientsMenu();
+        break;
+        case '2':
+            ShowReportsMenu();
+        break;
+        case '3':
+        break;
+        case '4':
         break;
     }
+    return 0;
 }
-void Reports(void)
+void ShowReportsMenu(void)
 {
     DefaultService();
+    gotoxy(30,8);
+    printf("REPORTS MENU");
     gotoxy(20,8);
     printf("[1]Patient Notification Report");
     gotoxy(29,8);
@@ -234,21 +246,25 @@ void Reports(void)
     printf("[esc]Return To Main Menu");
 }
 
-void Patients(void)
+void ShowPatientsMenu(void)
 {
     DefaultService();
-    gotoxy(20,8);
+    gotoxy(33,8);
+    printf("PATIENT MENU");
+    gotoxy(19,12);
     printf("[1]Existing Patient");
-    gotoxy(29,8);
+    gotoxy(43,12);
     printf("[2]Add New Patient");
-    gotoxy(38,8);
+    gotoxy(27,14);
     printf("[esc]Return To Main Menu");
 
 }
 
-void DocReportSelect(void)
+void ShowDocReportSelectMenu(void)
 {
     DefaultService();
+    gotoxy(25,8);
+    printf("DOCTOR'S REPORT MENU");
     gotoxy(20,8);
     printf("Select Doctor");
     gotoxy(29,8);
