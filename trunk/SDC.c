@@ -72,7 +72,9 @@ void ShowReportsMenu(void);
 //PatientsMenu
 void ShowPatientsMenu(void);
 //DoctorReportMenu
-void DocReportSelect(void);
+void ShowDocReportSelect(void);
+//Update Fees Menu
+void ShowUpdateFeesMenu(void);
 
 
 //Login
@@ -260,6 +262,7 @@ void ShowPatientsMenu(void)
 
 }
 
+
 void ShowDocReportSelectMenu(void)
 {
     DefaultService();
@@ -279,7 +282,24 @@ void ShowDocReportSelectMenu(void)
 }
 
 
-
+void ShowUpdateFeesMenu(void)
+{
+    DefaultService();
+    gotoxy(20,8);
+    printf("[1]Dental Examination");
+    gotoxy(29,8);
+    printf("[2]Cleaning");
+    gotoxy(38,8);
+    printf("[3]Extraction");
+    gotoxy(20,13);
+    printf("[4]Filling");
+    gotoxy(29,13);
+    printf("[5]X Ray");
+    gotoxy(38,13);
+	printf("[6]Braces");
+	gotoxy(38,19);
+    printf("[esc]Return To Main Menu");
+}
 
 
 
