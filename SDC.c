@@ -61,8 +61,11 @@ typedef struct DOCTOR
 //Welcome
 void WelcomeScreen(void);
 
-//Main Menu
+// Menus
 void MainMenu(void);
+void Reports(void);
+void Patients(void);
+void DocReportSelect(void);
 
 //Login
 int LoginMenu(void);
@@ -178,6 +181,59 @@ void MainMenu(void)
     gotoxy(61,14);
     printf("EXIT");
 }
+
+void Reports(void)
+{
+    DefaultService();
+    gotoxy(20,8);
+    printf("[1]Patient Notification Report");
+    gotoxy(29,8);
+    printf("[2]Doctors Report");
+    gotoxy(38,8);
+    printf("[3]General Income Report");
+    gotoxy(20,13);
+    printf("[4]Doctors Income Report");
+    gotoxy(29,13);
+    printf("[5]Individual Doctor's Report");
+    gotoxy(38,13);
+    printf("[esc]Return To Main Menu");
+}
+
+void Patients(void)
+{
+    DefaultService();
+    gotoxy(20,8);
+    printf("[1]Existing Patient");
+    gotoxy(29,8);
+    printf("[2]Add New Patient");
+    gotoxy(38,8);
+    printf("[esc]Return To Main Menu");
+
+}
+
+void DocReportSelect(void)
+{
+    DefaultService();
+    gotoxy(20,8);
+    printf("Select Doctor");
+    gotoxy(29,8);
+    printf("[1]Dental Surgeon");
+    gotoxy(38,8);
+    printf("[2] Orthodontist");
+	gotoxy(20,13);
+    printf("[3]Dentist");
+    gotoxy(29,13);
+    printf("[esc]Return To Main Menu");
+
+}
+
+
+
+
+
+
+
+
 
 void GenIncomeReport (void)
 {
