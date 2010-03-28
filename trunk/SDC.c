@@ -68,6 +68,7 @@ void MainMenu(void);
 int LoginMenu(void);
 
 //Tools
+int OptionDriver(int,int);
 void gotoxy(int, int);
 void ScreenFrame(void);
 
@@ -143,22 +144,36 @@ int LoginMenu(void)
     }while(true);
     return 0;
 }
+int OptionDriver(int x,int y)
+{
 
+    gotoxy(x,y);
+    printf("Option: ");
+
+}
 void MainMenu(void)
 {
     DefaultService();
-    gotoxy(20,8);
-    printf("menu1");
-    gotoxy(29,8);
-    printf("menu2");
-    gotoxy(38,8);
-    printf("menu3");
-    gotoxy(20,13);
-    printf("menu4");
-    gotoxy(29,13);
-    printf("menu5");
-    gotoxy(38,13);
-    printf("menu6");
+
+    gotoxy(19,13);
+    printf("[1]");
+    gotoxy(16,14);
+    printf("PATIENTS");
+
+    gotoxy(33,13);
+    printf("[2]");
+    gotoxy(31,14);
+    printf("REPORTS");
+
+    gotoxy(48,13);
+    printf("[3]");
+    gotoxy(44,14);
+    printf("UPDATE FEES");
+
+    gotoxy(61,13);
+    printf("[4]");
+    gotoxy(61,14);
+    printf("EXIT");
 }
 
 void GenIncomeReport (void)
