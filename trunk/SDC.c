@@ -18,8 +18,11 @@
 #define AdminPassword "12345"
 
 //User Type
-#define USER_ADMIN 0x1001
-#define USER_BASIC 0x1002
+#define USER_ADMIN 1001
+#define USER_BASIC 1002
+//Menu Option Types
+#define NUMERIC 2000
+#define ALPHABETIC 2001
 
 typedef struct PATIENT
 {
@@ -62,16 +65,21 @@ typedef struct DOCTOR
 void WelcomeScreen(void);
 
 // Menus
+void ShowMainMenu(void);
+void MainMenuController(char);
+
 void MainMenu(void);
 void Reports(void);
 void Patients(void);
 void DocReportSelect(void);
 
+
 //Login
 int LoginMenu(void);
 
 //Tools
-int OptionDriver(int,int);
+char GetChar(void);
+char OptionDriver(int,int,int);
 void gotoxy(int, int);
 void ScreenFrame(void);
 
@@ -88,8 +96,8 @@ void PatientNotiReport (void);
 int main()
 {
     LoginMenu();
-    MainMenu();
-    getch();
+    ShowMainMenu();
+    MainMenuController(OptionDriver(30,18,NUMERIC));
     return 0;
 }
 void WelcomeScreen(void)
@@ -147,14 +155,34 @@ int LoginMenu(void)
     }while(true);
     return 0;
 }
-int OptionDriver(int x,int y)
+char OptionDriver(int x,int y,int OptionType)
 {
-
+    char option;
     gotoxy(x,y);
     printf("Option: ");
-
+    while(true)
+    {
+        option = GetChar();
+        if(OptionType==NUMERIC)
+        {
+            if(isdigit(option))
+            {
+                printf("%c",option);
+                break;
+            }
+        }
+        else if(OptionType==ALPHABETIC)
+        {
+            if(isalpha(option))
+            {
+                printf("%c",option);
+                break;
+            }
+        }
+    }
+    return option;
 }
-void MainMenu(void)
+void ShowMainMenu(void)
 {
     DefaultService();
 
@@ -181,7 +209,14 @@ void MainMenu(void)
     gotoxy(61,14);
     printf("EXIT");
 }
-
+void MainMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+        break;
+    }
+}
 void Reports(void)
 {
     DefaultService();
@@ -251,8 +286,30 @@ void PatientNotiReport (void)
 {
 }
 
-
-
+/*
+ * Gets a character from the keyboard
+ * no parameters
+ * returns ascii key character
+*/
+char GetChar(void)
+{
+    HANDLE Handle;
+    DWORD AmountRead;
+    INPUT_RECORD InputRecord;
+    Handle = GetStdHandle(STD_INPUT_HANDLE);
+    while(true)
+    {
+        ReadConsoleInput(Handle,&InputRecord,1,&AmountRead);
+        if(InputRecord.EventType==KEY_EVENT)
+        {
+            if(InputRecord.Event.KeyEvent.bKeyDown)
+            {
+                return InputRecord.Event.KeyEvent.uChar.AsciiChar;
+            }
+        }
+    }
+    return '0';
+}
 /*
  * Positions cursor in the cosole
  * "x" is the x cordinates. "y" y cordinate
