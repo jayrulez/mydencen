@@ -230,7 +230,7 @@ int MainMenuController(char option)
         break;
         case '3':
             ShowUpdateFeesMenu();
-            do{}while(ReportsMenuController(OptionDriver(30,25,NUMERIC))==0);
+            do{}while(ReportsMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '4':
         break;
@@ -300,11 +300,12 @@ int PatientsMenuController(char option)
             do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
         break;
     }
+    return 0;
 }
 void ShowDocReportSelectMenu(void)
 {
     DefaultService();
-    gotoxy(25,8);
+    gotoxy(25,5);
     printf("DOCTOR'S REPORT MENU");
     gotoxy(20,8);
     printf("Select Doctor");
@@ -318,22 +319,22 @@ void ShowDocReportSelectMenu(void)
     printf("[Esc]Return To Main Menu");
 
 }
-
-
 void ShowUpdateFeesMenu(void)
 {
     DefaultService();
+    gotoxy(27,5);
+    printf("UPDATE FEES MENU");
     gotoxy(20,8);
     printf("[1]Dental Examination");
-    gotoxy(29,8);
+    gotoxy(20,10);
     printf("[2]Cleaning");
-    gotoxy(38,8);
+    gotoxy(20,12);
     printf("[3]Extraction");
-    gotoxy(20,13);
+    gotoxy(20,14);
     printf("[4]Filling");
-    gotoxy(29,13);
+    gotoxy(20,16);
     printf("[5]X Ray");
-    gotoxy(38,13);
+    gotoxy(20,18);
 	printf("[6]Braces");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
