@@ -24,6 +24,7 @@
 #define NUMERIC 2000
 #define ALPHABETIC 2001
 
+typedef INPUT_RECORD KEY_RECORD;
 typedef struct PATIENT
 {
     int Id;
@@ -69,8 +70,10 @@ void ShowMainMenu(void);
 int MainMenuController(char);
 //Report Menu
 void ShowReportsMenu(void);
+int ReportsMenuController(char);
 //PatientsMenu
 void ShowPatientsMenu(void);
+int PatientsMenuController(char);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -81,7 +84,7 @@ void ShowUpdateFeesMenu(void);
 int LoginMenu(void);
 
 //Tools
-char GetChar(void);
+KEY_RECORD GetChar(void);
 char OptionDriver(int,int,int);
 void gotoxy(int, int);
 void ScreenFrame(void);
@@ -100,9 +103,7 @@ int main()
 {
     LoginMenu();
     ShowMainMenu();
-    do
-    {
-    }while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+    do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
     return 0;
 }
 void WelcomeScreen(void)
@@ -162,25 +163,28 @@ int LoginMenu(void)
 }
 char OptionDriver(int x,int y,int OptionType)
 {
+    KEY_RECORD KeyRecord;
     char option;
     gotoxy(x,y);
     printf("Option: ");
     while(true)
     {
-        option = GetChar();
+
+        KeyRecord = GetChar();
+        option = KeyRecord.Event.KeyEvent.uChar.AsciiChar;
         if(OptionType==NUMERIC)
         {
             if(isdigit(option))
-            {
                 break;
-            }
+            else
+                return KeyRecord.Event.KeyEvent.wVirtualKeyCode;
         }
         else if(OptionType==ALPHABETIC)
         {
             if(isalpha(option))
-            {
                 break;
-            }
+            else
+                return (char)KeyRecord.Event.KeyEvent.wVirtualKeyCode;
         }
     }
     return option;
@@ -218,9 +222,11 @@ int MainMenuController(char option)
     {
         case '1':
             ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '2':
             ShowReportsMenu();
+            do{}while(ReportsMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '3':
         break;
@@ -232,22 +238,40 @@ int MainMenuController(char option)
 void ShowReportsMenu(void)
 {
     DefaultService();
-    gotoxy(30,8);
+    gotoxy(30,5);
     printf("REPORTS MENU");
     gotoxy(20,8);
     printf("[1]Patient Notification Report");
-    gotoxy(29,8);
+    gotoxy(20,10);
     printf("[2]Doctors Report");
-    gotoxy(38,8);
+    gotoxy(20,12);
     printf("[3]General Income Report");
-    gotoxy(20,13);
+    gotoxy(20,14);
     printf("[4]Doctors Income Report");
-    gotoxy(29,13);
+    gotoxy(20,16);
     printf("[5]Individual Doctor's Report");
-    gotoxy(38,13);
-    printf("[esc]Return To Main Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 }
-
+int ReportsMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+        break;
+        case '2':
+        break;
+        case '3':
+        break;
+        case '4':
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
 void ShowPatientsMenu(void)
 {
     DefaultService();
@@ -257,12 +281,24 @@ void ShowPatientsMenu(void)
     printf("[1]Existing Patient");
     gotoxy(43,12);
     printf("[2]Add New Patient");
-    gotoxy(27,14);
-    printf("[esc]Return To Main Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 
 }
-
-
+int PatientsMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+        break;
+        case '2':
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+}
 void ShowDocReportSelectMenu(void)
 {
     DefaultService();
@@ -276,8 +312,8 @@ void ShowDocReportSelectMenu(void)
     printf("[2] Orthodontist");
 	gotoxy(20,13);
     printf("[3]Dentist");
-    gotoxy(29,13);
-    printf("[esc]Return To Main Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 
 }
 
@@ -297,8 +333,8 @@ void ShowUpdateFeesMenu(void)
     printf("[5]X Ray");
     gotoxy(38,13);
 	printf("[6]Braces");
-	gotoxy(38,19);
-    printf("[esc]Return To Main Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 }
 
 
@@ -327,24 +363,24 @@ void PatientNotiReport (void)
  * no parameters
  * returns ascii key character
 */
-char GetChar(void)
+KEY_RECORD GetChar(void)
 {
     HANDLE Handle;
     DWORD AmountRead;
-    INPUT_RECORD InputRecord;
+    KEY_RECORD KeyRecord;
     Handle = GetStdHandle(STD_INPUT_HANDLE);
     while(true)
     {
-        ReadConsoleInput(Handle,&InputRecord,1,&AmountRead);
-        if(InputRecord.EventType==KEY_EVENT)
+        ReadConsoleInput(Handle,&KeyRecord,1,&AmountRead);
+        if(KeyRecord.EventType==KEY_EVENT)
         {
-            if(InputRecord.Event.KeyEvent.bKeyDown)
+            if(KeyRecord.Event.KeyEvent.bKeyDown)
             {
-                return InputRecord.Event.KeyEvent.uChar.AsciiChar;
+                return KeyRecord;//InputRecord.Event.KeyEvent.uChar.AsciiChar;
             }
         }
     }
-    return '0';
+    return KeyRecord;
 }
 /*
  * Positions cursor in the cosole
