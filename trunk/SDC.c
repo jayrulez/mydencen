@@ -74,6 +74,9 @@ int ReportsMenuController(char);
 //PatientsMenu
 void ShowPatientsMenu(void);
 int PatientsMenuController(char);
+void ShowPatientsAfterViewMenu(void);
+void ShowPatientsAfterAddMenu(void);
+void ShowPatientsAfterUpdateMenu(void);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -279,10 +282,12 @@ void ShowPatientsMenu(void)
     DefaultService();
     gotoxy(33,8);
     printf("PATIENT MENU");
-    gotoxy(19,12);
-    printf("[1]Existing Patient");
-    gotoxy(43,12);
-    printf("[2]Add New Patient");
+    gotoxy(5,12);
+    printf("[1]Add New Patient");
+    gotoxy(29,12);
+    printf("[2]Existing Patient");
+    gotoxy(53,12);
+    printf("[3]View Patient Record");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 
@@ -295,12 +300,26 @@ int PatientsMenuController(char option)
         break;
         case '2':
         break;
+        case '3':
+        break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
             do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
         break;
     }
     return 0;
+}
+void ShowPatientsAfterViewMenu(void)
+{
+    DefaultService();
+}
+void ShowPatientsAfterAddMenu(void)
+{
+    DefaultService();
+}
+void ShowPatientsAfterUpdateMenu(void)
+{
+    DefaultService();
 }
 void ShowDocReportSelectMenu(void)
 {
