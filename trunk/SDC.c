@@ -229,6 +229,8 @@ int MainMenuController(char option)
             do{}while(ReportsMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '3':
+            ShowUpdateFeesMenu();
+            do{}while(ReportsMenuController(OptionDriver(30,25,NUMERIC))==0);
         break;
         case '4':
         break;
