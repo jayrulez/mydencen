@@ -12,6 +12,7 @@
 #include <string.h>
 #include <time.h>
 #include <windows.h>
+#include <dos.h>
 
 //Admin Login
 #define AdminName "admin"
@@ -61,10 +62,10 @@ typedef struct DOCTOR
     char Specialty[20];
 }Doctor;
 
-
+//Create Files
+int CreateFiles(void);
 //Welcome
 void WelcomeScreen(void);
-
 // Menus
 void ShowMainMenu(void);
 int MainMenuController(char);
@@ -78,7 +79,7 @@ int ShowExistingPatientMenuController(char);
 void ShowPatientsAfterViewMenu(void);
 void ShowPatientsAfterAddMenu(void);
 void ShowPatientsAfterUpdateMenu(void);
-void AddNewPatient (void);
+bool AddNewPatient (void);
 
 
 //DoctorReportMenu
@@ -109,10 +110,15 @@ void PatientNotiReport (void);
 
 int main()
 {
+    CreateFiles();
     LoginMenu();
     ShowMainMenu();
     do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
     return 0;
+}
+int CreateFiles(void)
+{
+    return mkdir("./DataFiles");
 }
 void WelcomeScreen(void)
 {
@@ -294,11 +300,13 @@ void ShowPatientsMenu(void)
     gotoxy(33,8);
     printf("PATIENT MENU");
     gotoxy(5,12);
-    printf("[1]Add New Patient");
+    printf("[1]New Patient Visit");
     gotoxy(29,12);
-    printf("[2]Existing Patient");
+    printf("[2]Add New Patient");
     gotoxy(53,12);
     printf("[3]View Patient Record");
+    gotoxy(53,12);
+    printf("[4]Update Patient Record");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 
@@ -310,8 +318,16 @@ int PatientsMenuController(char option)
         case '1':
         break;
         case '2':
+            if(AddNewPatient())
+            {
+            }
+            else
+            {
+            }
         break;
         case '3':
+        break;
+        case '4':
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -390,11 +406,11 @@ int UpdateFeesMenuController(char option)
 
 
 
-void ShowExistingPatientMenu (void)
+/*void ShowExistingPatientMenu (void)
 {
   DefaultService();
     gotoxy(27,5);
-    printf("EXISTING PATIENTS MENU");
+    printf("UPDATE PATIENTS MENU");
     gotoxy(20,8);
     printf("[1]New Visit");
     gotoxy(20,10);
@@ -417,9 +433,63 @@ int ShowExistingPatientMenuController(char option)
         break;
     }
     return 0;
-}
-void AddNewPatient (void)
+}*/
+bool AddNewPatient (void)
 {
+    FILE *PatientStream;
+    Patient NewPatient;
+    Patient TempPatient;
+    DefaultService();
+    gotoxy(26,4);
+    printf("ADD NEW PATIENT");
+    gotoxy(20,8);
+    printf("Fist Name   :");
+    gotoxy(20,10);
+    printf("Last Name   :");
+    gotoxy(20,12);
+    printf("Address     :");
+    gotoxy(20,14);
+    printf("Phone Number:");
+    gotoxy(20,16);
+    printf("Allergies   :");
+    gotoxy(14,8);
+    scanf("%s",NewPatient.Fname);
+    gotoxy(14,10);
+    scanf("%s",NewPatient.Lname);
+    gotoxy(14,12);
+    scanf("%s",NewPatient.Address);
+    gotoxy(14,14);
+    scanf("%d",&(NewPatient.Phone));
+    gotoxy(14,16);
+    scanf("%s",NewPatient.Allergies);
+
+    PatientStream = fopen("./DataFiles/Patients.txt","r");
+    if(!PatientStream)
+    {
+        return false;
+    }
+    else
+    {
+        while(fscanf(PatientStream,"%d\n",&(TempPatient.Id))!=EOF)
+        {
+            TempPatient.Id+=1;
+        }
+        fclose(PatientStream);
+        PatientStream = fopen("./DataFiles/Patients.txt","a");
+        if(!PatientStream)
+        {
+            return false;
+        }
+        else
+        {
+            if(fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%d\t%s\t%s\t%s\t%f",&(TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            TempPatient.NextAppDate,TempPatient.CardBalance))==9)
+            {
+            }
+        }
+    }
+    return true;
 }
 
 
