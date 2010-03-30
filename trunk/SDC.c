@@ -253,8 +253,6 @@ void ShowReportsMenu(void)
     printf("[3]General Income Report");
     gotoxy(20,14);
     printf("[4]Doctors Income Report");
-    gotoxy(20,16);
-    printf("[5]Individual Doctor's Report");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 }
