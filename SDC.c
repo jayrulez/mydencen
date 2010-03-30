@@ -74,13 +74,18 @@ int ReportsMenuController(char);
 //PatientsMenu
 void ShowPatientsMenu(void);
 int PatientsMenuController(char);
+int ShowExistingPatientMenuController(char);
 void ShowPatientsAfterViewMenu(void);
 void ShowPatientsAfterAddMenu(void);
 void ShowPatientsAfterUpdateMenu(void);
+void AddNewPatient (void);
+
+
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
 void ShowUpdateFeesMenu(void);
+int UpdateFeesMenuController(char);
 
 
 //Login
@@ -233,7 +238,7 @@ int MainMenuController(char option)
         break;
         case '3':
             ShowUpdateFeesMenu();
-            do{}while(ReportsMenuController(OptionDriver(30,21,NUMERIC))==0);
+            do{}while(UpdateFeesMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '4':
         break;
@@ -261,12 +266,20 @@ int ReportsMenuController(char option)
     switch(option)
     {
         case '1':
+        PatientNotiReport();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '2':
+        DocReport();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '3':
+        GenIncomeReport();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '4':
+        DocIncomeReport();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -357,7 +370,57 @@ void ShowUpdateFeesMenu(void)
     printf("[Esc]Return To Main Menu");
 }
 
+int UpdateFeesMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+        break;
+        case '2':
+        break;
+        case '3':
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
 
+
+
+void ShowExistingPatientMenu (void)
+{
+  DefaultService();
+    gotoxy(27,5);
+    printf("EXISTING PATIENTS MENU");
+    gotoxy(20,8);
+    printf("[1]New Visit");
+    gotoxy(20,10);
+    printf("[2]Update Patient Record");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+
+int ShowExistingPatientMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+        break;
+        case '2':
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
+void AddNewPatient (void)
+{
+}
 
 
 
