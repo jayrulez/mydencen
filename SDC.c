@@ -378,7 +378,7 @@ int AddNewPatient (Patient *NewPatient)
     strcpy(NewPatient->NextAppDate,"N/A");
     strcpy(NewPatient->LastTreatment,"N/A");
     NewPatient->CardBalance = 0.00;
-    PatientStream = fopen("./DataFiles/Patients.txt","r+");
+    PatientStream = fopen("./DataFiles/Patients.txt","r");
     if(!PatientStream)
     {
         fclose(PatientStream);
@@ -388,10 +388,9 @@ int AddNewPatient (Patient *NewPatient)
     {
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
-            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
-            TempPatient.NextAppDate,TempPatient.CardBalance);
-
+            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            TempPatient.NextAppDate,&TempPatient.CardBalance);
             NewPatient->Id = TempPatient.Id + 1;
         }
     }
