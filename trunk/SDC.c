@@ -80,7 +80,10 @@ int AddNewPatient (Patient *);
 int AddPatientToFile(Patient);
 void ShowAddPatientsMenu(void);
 int AddPatientsMenuController(char,Patient *);
-
+int PatientSearch(void);
+void ShowViewPatientRecord(void);
+int ViewPatientRecordMenuController(char);
+int FindAndShowPatient(int);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -335,6 +338,9 @@ int PatientsMenuController(char option)
             }
         break;
         case '3':
+            FindAndShowPatient(PatientSearch());
+            ShowViewPatientRecord();
+            do{}while(ViewPatientRecordMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '4':
         break;
@@ -424,7 +430,7 @@ void ShowAddPatientsMenu(void)
     printf("[1]Save");
     gotoxy(42,19);
     printf("[2]Cancel");
-    gotoxy(0,23);
+    gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 }
 int AddPatientsMenuController(char option,Patient *NewPatient)
@@ -439,6 +445,97 @@ int AddPatientsMenuController(char option,Patient *NewPatient)
         case '2':
             ShowPatientsMenu();
             do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
+int PatientSearch(void)
+{
+    int id;
+    DefaultService();
+    gotoxy(30,4);
+    printf("PATIENT SEARCH");
+    gotoxy(20,11);
+    printf("Patient Id:");
+    gotoxy(20+12,11);
+    scanf("%d",&id);
+    return id;
+}
+int FindAndShowPatient(int Id)
+{
+    FILE * PatientStream;
+    Patient TempPatient;
+    DefaultService();
+    PatientStream = fopen("./DataFiles/Patients.txt","r");
+    if(!PatientStream)
+    {
+        fclose(PatientStream);
+        return 0;
+    }
+    else
+    {
+        while(!feof(PatientStream))
+        {
+            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            TempPatient.NextAppDate,&TempPatient.CardBalance);
+            if(TempPatient.Id==Id)
+            {
+                gotoxy(17,8);
+                printf("Patient Id    : %d",TempPatient.Id);
+                gotoxy(17,9);
+                printf("First Name    : %s",TempPatient.Fname);
+                gotoxy(17,10);
+                printf("Last Name     : %s",TempPatient.Lname);
+                gotoxy(17,11);
+                printf("Address       : %s",TempPatient.Address);
+                gotoxy(17,12);
+                printf("Phone Number  : %d",TempPatient.Phone);
+                gotoxy(17,13);
+                printf("Allergies     : %s",TempPatient.Allergies);
+                gotoxy(17,14);
+                printf("Last Treatment: %s",TempPatient.LastTreatment);
+                gotoxy(17,15);
+                printf("Next AppDate  : %s",TempPatient.NextAppDate);
+                gotoxy(17,16);
+                printf("Card Balance  : %.2f",TempPatient.CardBalance);
+                return 1;
+            }
+        }
+        gotoxy(20,9);
+        printf("Record not found!");
+
+    }
+    fclose(PatientStream);
+    return -1;
+}
+void ShowViewPatientRecord(void)
+{
+    gotoxy(30,4);
+    printf("VIEW PATIENT MENU");
+    gotoxy(20,19);
+    printf("[1]Patient Menu");
+    gotoxy(40,19);
+    printf("[2]<--Search Patient");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int ViewPatientRecordMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case '2':
+            FindAndShowPatient(PatientSearch());
+            ShowViewPatientRecord();
+            do{}while(ViewPatientRecordMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
