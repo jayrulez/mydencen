@@ -76,12 +76,10 @@ int ReportsMenuController(char);
 void ShowPatientsMenu(void);
 int PatientsMenuController(char);
 int ShowExistingPatientMenuController(char);
-void ShowPatientsAfterViewMenu(void);
-void ShowPatientsAfterAddMenu(void);
-void ShowPatientsAfterUpdateMenu(void);
 int AddNewPatient (Patient *);
-int AddPatientToFile(Patient *);
-
+int AddPatientToFile(Patient);
+void ShowAddPatientsMenu(void);
+int AddPatientsMenuController(char,Patient *);
 
 //DoctorReportMenu
 void ShowDocReportSelect(void);
@@ -142,9 +140,8 @@ int LoginMenu(void)
 {
     char UserName[50];
     char Password[15];
-
+    DefaultService();
     do{
-        DefaultService();
         gotoxy(20,8);
         printf("UserName:");
         gotoxy(20,10);
@@ -154,10 +151,8 @@ int LoginMenu(void)
         gotoxy(30,10);
         scanf("%s",Password);
 
-        if(strcmp(UserName,AdminName)==0)
+        if(strcmp(UserName,AdminName)==0 && strcmp(AdminPassword,Password)==0)
         {
-            gotoxy(25,3);
-            printf("Login Successfull!");
             return USER_ADMIN;
         }
         else
@@ -179,9 +174,9 @@ int LoginMenu(void)
                 fclose(UserFile);
             }
         }
+        DefaultService();
         gotoxy(20,3);
         printf("Failed: Incorrect username or password");
-        getch();
     }while(1);
     return 0;
 }
@@ -328,9 +323,12 @@ int PatientsMenuController(char option)
         case '1':
         break;
         case '2':
-            Patient *NewPatient;
+            Patient New;
+            Patient *NewPatient = &New;
             if(AddNewPatient(NewPatient))
             {
+                ShowAddPatientsMenu();
+                do{}while(AddPatientsMenuController(OptionDriver(30,21,NUMERIC),NewPatient)==0);
             }
             else
             {
@@ -347,17 +345,108 @@ int PatientsMenuController(char option)
     }
     return 0;
 }
-void ShowPatientsAfterViewMenu(void)
+int AddNewPatient (Patient *NewPatient)
 {
+    FILE *PatientStream;
+    Patient TempPatient;
     DefaultService();
+    gotoxy(26,4);
+    printf("ADD NEW PATIENT");
+    gotoxy(20,8);
+    printf("Fist Name   :");
+    gotoxy(20,10);
+    printf("Last Name   :");
+    gotoxy(20,12);
+    printf("Address     :");
+    gotoxy(20,14);
+    printf("Phone Number:");
+    gotoxy(20,16);
+    printf("Allergies   :");
+    gotoxy(20+14,8);
+    fflush(stdin);
+    scanf("%s",NewPatient->Fname);
+    gotoxy(20+14,10);
+    scanf("%s",NewPatient->Lname);
+    gotoxy(20+14,12);
+    scanf("%s",NewPatient->Address);
+    gotoxy(20+14,14);
+    scanf("%d",&(NewPatient->Phone));
+    gotoxy(20+14,16);
+    scanf("%s",NewPatient->Allergies);
+    TempPatient.Id = 1;
+    NewPatient->Id = 1;
+    strcpy(NewPatient->NextAppDate,"N/A");
+    strcpy(NewPatient->LastTreatment,"N/A");
+    NewPatient->CardBalance = 0.00;
+    PatientStream = fopen("./DataFiles/Patients.txt","r+");
+    if(!PatientStream)
+    {
+        fclose(PatientStream);
+        return 0;
+    }
+    else
+    {
+        while(!feof(PatientStream))
+        {
+            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            TempPatient.NextAppDate,TempPatient.CardBalance);
+
+            NewPatient->Id = TempPatient.Id + 1;
+        }
+    }
+    fclose(PatientStream);
+    return 1;
 }
-void ShowPatientsAfterAddMenu(void)
+int AddPatientToFile(Patient NewPatient)
 {
-    DefaultService();
+    FILE * PatientStream;
+    PatientStream = fopen("./DataFiles/Patients.txt","a");
+    if(!PatientStream)
+    {
+        fclose(PatientStream);
+        return 0;
+    }
+    else
+    {
+        if(fprintf(PatientStream,"%d %s %s %s %d %s %s %s %.2f\n",NewPatient.Id,NewPatient.Fname,NewPatient.Lname,
+        NewPatient.Address,NewPatient.Phone,NewPatient.Allergies,NewPatient.LastTreatment,
+        NewPatient.NextAppDate,NewPatient.CardBalance)==9)
+        {
+        }
+        fclose(PatientStream);
+    }
+    return 1;
 }
-void ShowPatientsAfterUpdateMenu(void)
+
+void ShowAddPatientsMenu(void)
 {
-    DefaultService();
+    gotoxy(30,19);
+    printf("[1]Save");
+    gotoxy(42,19);
+    printf("[2]Cancel");
+    gotoxy(0,23);
+    printf("[Esc]Return To Main Menu");
+}
+int AddPatientsMenuController(char option,Patient *NewPatient)
+{
+    switch(option)
+    {
+        case '1':
+            AddPatientToFile(*NewPatient);
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case '2':
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
 }
 void ShowDocReportSelectMenu(void)
 {
@@ -416,108 +505,6 @@ int UpdateFeesMenuController(char option)
 }
 
 
-
-/*void ShowExistingPatientMenu (void)
-{
-  DefaultService();
-    gotoxy(27,5);
-    printf("UPDATE PATIENTS MENU");
-    gotoxy(20,8);
-    printf("[1]New Visit");
-    gotoxy(20,10);
-    printf("[2]Update Patient Record");
-    gotoxy(1,23);
-    printf("[Esc]Return To Main Menu");
-}
-
-int ShowExistingPatientMenuController(char option)
-{
-    switch(option)
-    {
-        case '1':
-        break;
-        case '2':
-        break;
-        case (char)VK_ESCAPE:
-            ShowMainMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
-        break;
-    }
-    return 0;
-}*/
-int AddNewPatient (Patient *NewPatient)
-{
-    FILE *PatientStream;
-    Patient TempPatient;
-    DefaultService();
-    gotoxy(26,4);
-    printf("ADD NEW PATIENT");
-    gotoxy(20,8);
-    printf("Fist Name   :");
-    gotoxy(20,10);
-    printf("Last Name   :");
-    gotoxy(20,12);
-    printf("Address     :");
-    gotoxy(20,14);
-    printf("Phone Number:");
-    gotoxy(20,16);
-    printf("Allergies   :");
-    gotoxy(20+14,8);
-    fflush(stdin);
-    scanf("%s",&(NewPatient->Fname));
-    gotoxy(20+14,10);
-    scanf("%s",*(NewPatient->Lname));
-    gotoxy(20+14,12);
-    scanf("%s",*(NewPatient->Address));
-    gotoxy(20+14,14);
-    scanf("%d",NewPatient->Phone);
-    gotoxy(20+14,16);
-    scanf("%s",*(NewPatient->Allergies));
-    TempPatient.Id = 1;
-    NewPatient->Id = 0;
-    strcpy(NewPatient->NextAppDate,"N/A");
-    strcpy(NewPatient->LastTreatment,"N/A");
-    NewPatient->CardBalance = 0.00;
-    PatientStream = fopen("./DataFiles/Patients.txt","r");
-    if(!PatientStream)
-    {
-        fclose(PatientStream);
-        return 0;
-    }
-    else
-    {
-        while(!feof(PatientStream))
-        {
-
-            if(fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f\n",TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
-            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
-            TempPatient.NextAppDate,TempPatient.CardBalance)==9)
-                NewPatient->Id = TempPatient.Id + 1;
-        }
-    }
-    fclose(PatientStream);
-    return 1;
-}
-int AddPatientToFile(Patient NewPatient)
-{
-    FILE * PatientStream;
-    PatientStream = fopen("./DataFiles/Patients.txt","a");
-    if(!PatientStream)
-    {
-        fclose(PatientStream);
-        return 0;
-    }
-    else
-    {
-        if(fprintf(PatientStream,"%d %s %s %s %d %s %s %s %f",NewPatient.Id,NewPatient.Fname,NewPatient.Lname,
-        NewPatient.Address,NewPatient.Phone,NewPatient.Allergies,NewPatient.LastTreatment,
-        NewPatient.NextAppDate,NewPatient.CardBalance)==9)
-        {
-        }
-        fclose(PatientStream);
-    }
-    return 1;
-}
 
 void GenIncomeReport (void)
 {
