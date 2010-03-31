@@ -21,9 +21,14 @@
 //User Type
 #define USER_ADMIN 1001
 #define USER_BASIC 1002
+
 //Menu Option Types
 #define NUMERIC 2000
 #define ALPHABETIC 2001
+
+//Payment Type
+#define CASH_PAYEMNT 0
+#define CARD_PAYMENT 1
 
 typedef INPUT_RECORD KEY_RECORD;
 typedef struct PATIENT
@@ -44,12 +49,17 @@ typedef struct PAYMENT
     float cash;
     float card;
 }Payment;
-
+typedef struct PROCEDURE
+{
+    int Code;
+    char Name[20];
+    float Cost;
+}Procedure;
 typedef struct VISIT
 {
     int PatientID;
     int DoctorID;
-    int Procedure;
+    int ProcedureCode;
     Payment VisitPayment;
 }Visit;
 
@@ -84,6 +94,11 @@ int PatientSearch(void);
 void ShowViewPatientRecord(void);
 int ViewPatientRecordMenuController(char);
 int FindAndShowPatient(int);
+void ShowNewPatientVisitMenu(void);
+int NewPatientVisitMenuController(char,Visit*);
+int NewPatientVisit(Visit *);
+int ProcessVisitTransaction(Visit *,Patient *,int);
+int AddPatientVisitToFile(Visit);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -120,15 +135,35 @@ int main()
 }
 int CreateFiles(void)
 {
-    FILE *file;
+    FILE *PatientStream;
+    FILE *VisitStream;
+    FILE *ProcedureStream;
+    DefaultService();
     mkdir("./DataFiles");
-    file = fopen("./DataFiles/Patients.txt","a");
-    if(file)
+    PatientStream = fopen("./DataFiles/Patients.txt","a+");
+    VisitStream = fopen("./DataFiles/PatientVisit.txt","a+");
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    if(PatientStream && VisitStream && ProcedureStream)
     {
-        fclose(file);
+        fclose(VisitStream);
+        fclose(PatientStream);
+        fclose(ProcedureStream);
         return 1;
     }
-    fclose(file);
+    else
+    {
+        gotoxy(20,9);
+        printf("Error: All files could not be created.");
+        gotoxy(15,11);
+        printf("Ensure that you have priveleges to create files");
+        gotoxy(27,18);
+        printf("Press any key to exit");
+        GetChar();
+    }
+    fclose(VisitStream);
+    fclose(PatientStream);
+    fclose(ProcedureStream);
+    exit(0);
     return 0;
 }
 void WelcomeScreen(void)
@@ -145,13 +180,13 @@ int LoginMenu(void)
     char Password[15];
     DefaultService();
     do{
-        gotoxy(20,8);
+        gotoxy(25,12);
         printf("UserName:");
-        gotoxy(20,10);
+        gotoxy(25,14);
         printf("Password:");
-        gotoxy(30,8);
+        gotoxy(35,12);
         scanf("%s",UserName);
-        gotoxy(30,10);
+        gotoxy(35,14);
         scanf("%s",Password);
 
         if(strcmp(UserName,AdminName)==0 && strcmp(AdminPassword,Password)==0)
@@ -317,17 +352,26 @@ void ShowPatientsMenu(void)
     printf("[4]Update Patient Record");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
-
 }
 int PatientsMenuController(char option)
 {
     switch(option)
     {
         case '1':
+            Visit NewV;
+            Visit *NewVisit = &NewV;
+            if(NewPatientVisit(NewVisit))
+            {
+                ShowNewPatientVisitMenu();
+                do{}while(NewPatientVisitMenuController(OptionDriver(30,21,NUMERIC),NewVisit)==0);
+            }
+            else
+            {
+            }
         break;
         case '2':
-            Patient New;
-            Patient *NewPatient = &New;
+            Patient NewP;
+            Patient *NewPatient = &NewP;
             if(AddNewPatient(NewPatient))
             {
                 ShowAddPatientsMenu();
@@ -452,6 +496,114 @@ int AddPatientsMenuController(char option,Patient *NewPatient)
         break;
     }
     return 0;
+}
+int NewPatientVisit(Visit *NewVisit)
+{
+    FILE *VisitStream;
+    Patient TempPatient;
+    DefaultService();
+    gotoxy(26,4);
+    printf("NEW PATIENT VISIT");
+    gotoxy(20,8);
+    printf("Patient ID       :");
+    gotoxy(20,10);
+    printf("Doctor ID        :");
+    gotoxy(20,12);
+    printf("Procedure Code   :");
+
+    fflush(stdin);
+    gotoxy(20+14,8);
+    scanf("%d",&NewVisit->DoctorID);
+    gotoxy(20+14,10);
+    scanf("%d",&NewVisit->PatientID);
+    gotoxy(20+14,12);
+    scanf("%d",&NewVisit->ProcedureCode);
+    return 1;
+}
+int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int PaymentType)
+{
+    FILE *ProcedureStream;
+    FILE *PatientStream;
+    Procedure TempProcedure;
+    float VisitCost;
+    float CardCoverage;
+    float CashCoverage;
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    PatientStream = fopen("./DataFiles/Patients.txt","r");
+    if(!ProcedureStream || !PatientStream)
+    {
+        fclose(ProcedureStream);
+        return 0;
+    }
+    else
+    {
+        while(!feof(PatientStream))
+        {
+            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",&ExistingPatient->Id,ExistingPatient->Fname,ExistingPatient->Lname,
+            ExistingPatient->Address,&ExistingPatient->Phone,ExistingPatient->Allergies,ExistingPatient->LastTreatment,
+            ExistingPatient->NextAppDate,&ExistingPatient->CardBalance);
+            if(ExistingPatient->Id == NewVisit->PatientID)
+            {
+                break;
+            }
+        }
+        while(!feof(ProcedureStream))
+        {
+            fscanf(ProcedureStream,"%d %s %f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
+            if(TempProcedure.Code == NewVisit->ProcedureCode)
+            {
+                VisitCost = TempProcedure.Cost;
+                CardCoverage = VisitCost * 0.85;
+                if(PaymentType == CARD_PAYMENT && (ExistingPatient->CardBalance>=CardCoverage))
+                {
+                    CashCoverage = VisitCost - CardCoverage;
+                    NewVisit->VisitPayment.card = CardCoverage;
+                    NewVisit->VisitPayment.cash = CashCoverage;
+                }
+                else
+                {
+                    CardCoverage = 0.0;
+                    CashCoverage = VisitCost;
+                    NewVisit->VisitPayment.card = CardCoverage;
+                    NewVisit->VisitPayment.cash = CashCoverage;
+                }
+                break;
+            }
+        }
+    }
+    return 1;
+}
+int AddPatientVisitToFile(Visit NewVisit)
+{
+    FILE * VisitStream;
+    VisitStream = fopen("./DataFiles/PatientVisit.txt","r");
+    if(!VisitStream)
+    {
+        fclose(VisitStream);
+        return 0;
+    }
+    else
+    {
+        while(!feof(VisitStream))
+        {
+            fprintf(VisitStream,"%d %d %d %f %f",&NewVisit.DoctorID,&NewVisit.PatientID,
+            &NewVisit.ProcedureCode,&NewVisit.VisitPayment.card,&NewVisit.VisitPayment.cash);
+        }
+    }
+    fclose(VisitStream);
+    return 1;
+}
+void ShowNewPatientVisitMenu(void)
+{
+    gotoxy(30,19);
+    printf("[1]Save");
+    gotoxy(42,19);
+    printf("[2]Cancel");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int NewPatientVisitMenuController(char option, Visit *NewVisit)
+{
 }
 int PatientSearch(void)
 {
