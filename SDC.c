@@ -142,7 +142,7 @@ int CreateFiles(void)
     mkdir("./DataFiles");
     PatientStream = fopen("./DataFiles/Patients.txt","a+");
     VisitStream = fopen("./DataFiles/PatientVisit.txt","a+");
-    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","a+");
     if(PatientStream && VisitStream && ProcedureStream)
     {
         fclose(VisitStream);
