@@ -52,7 +52,7 @@ typedef struct PAYMENT
 typedef struct PROCEDURE
 {
     int Code;
-    char Name[20];
+    char Name[40];
     float Cost;
 }Procedure;
 typedef struct VISIT
@@ -165,6 +165,13 @@ int CreateFiles(void)
             Sleep(500);
             gotoxy(40,12);
             printf("3. Procedure.txt");
+            fprintf(ProcedureStream,"%s\t%s\t%s\n","Code","Name","Cost($)");
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1001,"Dental Examination",5500.00);
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1002,"Cleaning",7500.00);
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1003,"Extraction",11500.00);
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1004,"Fillings",12000.00);
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1005,"Xray",2800.00);
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1006,"Braces",7000.00);
             Sleep(700);
             gotoxy(30,15);
             printf("All Files Created!");
