@@ -98,6 +98,7 @@ void ShowNewPatientVisitMenu(void);
 int NewPatientVisitMenuController(char,Visit*);
 int NewPatientVisit(Visit *);
 int ProcessVisitTransaction(Visit *,Patient *,int);
+int ShowPaymentOptionsMenu(Visit *);
 int AddPatientVisitToFile(Visit);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
@@ -125,7 +126,7 @@ void DocReport (void);
 void PatientNotiReport (void);
 
 
-int main()
+int main(void)
 {
     CreateFiles();
     LoginMenu();
@@ -140,31 +141,80 @@ int CreateFiles(void)
     FILE *ProcedureStream;
     DefaultService();
     mkdir("./DataFiles");
-    PatientStream = fopen("./DataFiles/Patients.txt","a+");
-    VisitStream = fopen("./DataFiles/PatientVisit.txt","a+");
-    ProcedureStream = fopen("./DataFiles/Procedure.txt","a+");
-    if(PatientStream && VisitStream && ProcedureStream)
+    PatientStream = fopen("./DataFiles/Patients.txt","r");
+    VisitStream = fopen("./DataFiles/PatientVisit.txt","r");
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    if(!PatientStream && !VisitStream && !ProcedureStream)
     {
-        fclose(VisitStream);
-        fclose(PatientStream);
-        fclose(ProcedureStream);
-        return 1;
+        PatientStream = fopen("./DataFiles/Patients.txt","a");
+        VisitStream = fopen("./DataFiles/PatientVisit.txt","a");
+        ProcedureStream = fopen("./DataFiles/Procedure.txt","a");
+        gotoxy(25,6);
+        printf("Error: Files do not exist!");
+        Sleep(700);
+        gotoxy(30,8);
+        printf("Creating Files...");
+        if(PatientStream && VisitStream && ProcedureStream)
+        {
+            Sleep(500);
+            gotoxy(40,10);
+            printf("1. Patients.txt");
+            Sleep(500);
+            gotoxy(40,11);
+            printf("2. PatientVisit.txt");
+            Sleep(500);
+            gotoxy(40,12);
+            printf("3. Procedure.txt");
+            Sleep(700);
+            gotoxy(30,15);
+            printf("All Files Created!");
+            gotoxy(27,21);
+            printf("Press any key to Continue");
+            GetChar();
+            fclose(VisitStream);
+            fclose(PatientStream);
+            fclose(ProcedureStream);
+            return 1;
+        }
+        else
+        {
+            Sleep(700);
+            gotoxy(30,13);
+            printf("Error: File Creation Failed!");
+            gotoxy(30,21);
+            printf("Press any key to Exit");
+            GetChar();
+            exit(0);
+            return 0;
+        }
     }
     else
     {
-        gotoxy(20,9);
-        printf("Error: All files could not be created.");
-        gotoxy(15,11);
-        printf("Ensure that you have priveleges to create files");
-        gotoxy(27,18);
-        printf("Press any key to exit");
-        GetChar();
+        PatientStream = fopen("./DataFiles/Patients.txt","a");
+        VisitStream = fopen("./DataFiles/PatientVisit.txt","a");
+        ProcedureStream = fopen("./DataFiles/Procedure.txt","a");
+        if(PatientStream && VisitStream && ProcedureStream)
+        {
+            fclose(VisitStream);
+            fclose(PatientStream);
+            fclose(ProcedureStream);
+            return 1;
+        }
+        else
+        {
+            gotoxy(20,9);
+            printf("Warning: Files are in READ-ONLY mode.");
+            gotoxy(20,11);
+            printf("Changes made to records will not be saved.");
+            gotoxy(27,16);
+            printf("Press any key to Continue");
+            GetChar();
+        }
+        fclose(VisitStream);
+        fclose(PatientStream);
+        fclose(ProcedureStream);
     }
-    fclose(VisitStream);
-    fclose(PatientStream);
-    fclose(ProcedureStream);
-    exit(0);
-    return 0;
+    return 1;
 }
 void WelcomeScreen(void)
 {
@@ -359,14 +409,33 @@ int PatientsMenuController(char option)
     {
         case '1':
             Visit NewV;
+            int Result;
             Visit *NewVisit = &NewV;
             if(NewPatientVisit(NewVisit))
             {
+                Result = ShowPaymentOptionsMenu(NewVisit);
+                if(Result == 1)
+                {
+                /*
                 ShowNewPatientVisitMenu();
                 do{}while(NewPatientVisitMenuController(OptionDriver(30,21,NUMERIC),NewVisit)==0);
-            }
-            else
-            {
+                */
+                }
+                else if(Result == 0)
+                {
+                    gotoxy(20,10);
+                    printf("Error: Procedure Code not found in files.");
+                }
+                if(Result == -1)
+                {
+                    gotoxy(30,10);
+                    printf("Error: Patient does not exist.");
+                }
+                if(Result == -2)
+                {
+                    gotoxy(30,10);
+                    printf("Error: Doctor does not exist.");
+                }
             }
         break;
         case '2':
@@ -520,6 +589,37 @@ int NewPatientVisit(Visit *NewVisit)
     scanf("%d",&NewVisit->ProcedureCode);
     return 1;
 }
+int ShowPaymentOptionsMenu(Visit *NewVisit)
+{
+    FILE *ProcedureStream;
+    Procedure TempProcedure;
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    if(!ProcedureStream)
+    {
+        fclose(ProcedureStream);
+        return 0;
+    }
+    else
+    {
+        while(!feof(ProcedureStream))
+        {
+            fscanf(ProcedureStream,"%d %s %f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
+            if(TempProcedure.Code == NewVisit->ProcedureCode)
+            {
+                gotoxy(27,8);
+                printf("Procedure Code:");
+                gotoxy(27,10);
+                printf("Procedure Name:");
+                gotoxy(37,13);
+                printf("Cost: $%.2f",TempProcedure.Cost);
+                fclose(ProcedureStream);
+                return 1;
+            }
+        }
+    }
+    fclose(ProcedureStream);
+    return 0;
+}
 int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int PaymentType)
 {
     FILE *ProcedureStream;
@@ -553,7 +653,7 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int Payment
             if(TempProcedure.Code == NewVisit->ProcedureCode)
             {
                 VisitCost = TempProcedure.Cost;
-                CardCoverage = VisitCost * 0.85;
+                CardCoverage = ExistingPatient->CardBalance * 0.85;
                 if(PaymentType == CARD_PAYMENT && (ExistingPatient->CardBalance>=CardCoverage))
                 {
                     CashCoverage = VisitCost - CardCoverage;
