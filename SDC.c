@@ -170,10 +170,10 @@ int CreateFiles(void)
             printf("All Files Created!");
             gotoxy(27,21);
             printf("Press any key to Continue");
-            GetChar();
             fclose(VisitStream);
             fclose(PatientStream);
             fclose(ProcedureStream);
+            GetChar();
             return 1;
         }
         else
@@ -210,9 +210,6 @@ int CreateFiles(void)
             printf("Press any key to Continue");
             GetChar();
         }
-        fclose(VisitStream);
-        fclose(PatientStream);
-        fclose(ProcedureStream);
     }
     return 1;
 }
