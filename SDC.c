@@ -173,6 +173,7 @@ int CreateFiles(void)
             fclose(VisitStream);
             fclose(PatientStream);
             fclose(ProcedureStream);
+            fflush(stdin);
             GetChar();
             return 1;
         }
