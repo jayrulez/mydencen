@@ -97,9 +97,12 @@ int FindAndShowPatient(int);
 void ShowNewPatientVisitMenu(void);
 int NewPatientVisitMenuController(char,Visit*);
 int NewPatientVisit(Visit *);
-int ProcessVisitTransaction(Visit *,Patient *,int);
-int ShowPaymentOptionsMenu(Visit *);
-int AddPatientVisitToFile(Visit);
+int ProcessVisitTransaction(Visit *,Patient *);
+void ShowFailPaymentOptionsMenu(void);
+int FailPaymentOptionsMenuController(char);
+void ShowPaymentOptionsMenu(void);
+int PaymentOptionsMenuController(char,Visit*,Patient*);
+int AddPatientVisitToFile(Visit,Patient);
 int IfPatientExist(int);
 int IfDoctorExist(int);
 int IfProcedureExist(int);
@@ -418,33 +421,35 @@ int PatientsMenuController(char option)
     {
         case '1':
             Visit NewV;
+            Patient Exp;
+            Patient *ExistingPatient = &Exp;
             int Result;
             Visit *NewVisit = &NewV;
-            if(NewPatientVisit(NewVisit))
+            Result = NewPatientVisit(NewVisit);
+            if(Result == 1)
             {
-                Result = ShowPaymentOptionsMenu(NewVisit);
-                if(Result == 1)
-                {
-                /*
-                ShowNewPatientVisitMenu();
-                do{}while(NewPatientVisitMenuController(OptionDriver(30,21,NUMERIC),NewVisit)==0);
-                */
-                }
-                else if(Result == 0)
-                {
-                    gotoxy(20,10);
-                    printf("Error: Procedure Code not found in files.");
-                }
-                if(Result == -1)
-                {
-                    gotoxy(30,10);
-                    printf("Error: Patient does not exist.");
-                }
-                if(Result == -2)
-                {
-                    gotoxy(30,10);
-                    printf("Error: Doctor does not exist.");
-                }
+                ProcessVisitTransaction(NewVisit,ExistingPatient);
+            }
+            else if(Result == -1)
+            {
+                ShowFailPaymentOptionsMenu();
+                gotoxy(20,10);
+                printf("Error: Procedure Code not found in files.");
+                do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+            }
+            if(Result == -3)
+            {
+                ShowFailPaymentOptionsMenu();
+                gotoxy(30,10);
+                printf("Error: Patient does not exist.");
+                do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+            }
+            if(Result == -2)
+            {
+                ShowFailPaymentOptionsMenu();
+                gotoxy(30,10);
+                printf("Error: Doctor does not exist.");
+                do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
             }
         break;
         case '2':
@@ -575,7 +580,7 @@ int AddNewPatient (Patient *NewPatient)
     scanf("%d",&(NewPatient->Phone));
     gotoxy(20+14,16);
     scanf("%s",NewPatient->Allergies);
-    TempPatient.Id = 1;
+    TempPatient.Id = 0;
     NewPatient->Id = 1;
     strcpy(NewPatient->NextAppDate,"N/A");
     strcpy(NewPatient->LastTreatment,"N/A");
@@ -657,53 +662,92 @@ int NewPatientVisit(Visit *NewVisit)
     gotoxy(26,4);
     printf("NEW PATIENT VISIT");
     gotoxy(20,8);
-    printf("Patient ID       :");
+    printf("Patient ID    :");
     gotoxy(20,10);
-    printf("Doctor ID        :");
+    printf("Doctor ID     :");
     gotoxy(20,12);
-    printf("Procedure Code   :");
+    printf("Procedure Code:");
 
     fflush(stdin);
-    gotoxy(20+14,8);
+    gotoxy(20+16,8);
     scanf("%d",&NewVisit->DoctorID);
-    gotoxy(20+14,10);
+    gotoxy(20+16,10);
     scanf("%d",&NewVisit->PatientID);
-    gotoxy(20+14,12);
+    gotoxy(20+16,12);
     scanf("%d",&NewVisit->ProcedureCode);
+    if(IfProcedureExist(NewVisit->ProcedureCode)==0)
+    {
+        return -1;
+    }
+    if(IfDoctorExist(NewVisit->DoctorID)==0)
+    {
+        return -2;
+    }
+    if(IfPatientExist(NewVisit->PatientID)==0)
+    {
+        return -3;
+    }
     return 1;
 }
-int ShowPaymentOptionsMenu(Visit *NewVisit)
+void ShowFailPaymentOptionsMenu(void)
 {
-    FILE *ProcedureStream;
-    Procedure TempProcedure;
-    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
-    if(!ProcedureStream)
+    DefaultService();
+    gotoxy(25,19);
+    printf("[1]<--New Visit");
+    gotoxy(42,19);
+    printf("[2]Patient Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int FailPaymentOptionsMenuController(char option)
+{
+    switch(option)
     {
-        fclose(ProcedureStream);
-        return 0;
+        case '1':
+            Visit NewV;
+            Visit *NewVisit = &NewV;
+            NewPatientVisit(NewVisit);
+        break;
+        case '2':
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
     }
-    else
-    {
-        while(!feof(ProcedureStream))
-        {
-            fscanf(ProcedureStream,"%d %s %f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
-            if(TempProcedure.Code == NewVisit->ProcedureCode)
-            {
-                gotoxy(27,8);
-                printf("Procedure Code: %s",TempProcedure.Code);
-                gotoxy(27,10);
-                printf("Procedure Name: %s",TempProcedure.Name);
-                gotoxy(37,13);
-                printf("Cost: $%.2f",TempProcedure.Cost);
-                fclose(ProcedureStream);
-                return 1;
-            }
-        }
-    }
-    fclose(ProcedureStream);
     return 0;
 }
-int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int PaymentType)
+void ShowPaymentOptionsMenu(void)
+{
+    DefaultService();
+    gotoxy(30,19);
+    printf("[1]Save");
+    gotoxy(40,19);
+    printf("[2]Cancel");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int PaymentOptionsMenuController(char option, Visit *NewVisit, Patient *ExistingPatient)
+{
+    switch(option)
+    {
+        case '1':
+            AddPatientVisitToFile(*NewVisit,*ExistingPatient);
+        break;
+        case '2':
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
+int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
 {
     FILE *ProcedureStream;
     FILE *PatientStream;
@@ -735,31 +779,38 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int Payment
             fscanf(ProcedureStream,"%d\t%s\t%f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
             if(TempProcedure.Code == NewVisit->ProcedureCode)
             {
+                gotoxy(27,8);
+                printf("Procedure Code: %s",TempProcedure.Code);
+                gotoxy(27,10);
+                printf("Procedure Name: %s",TempProcedure.Name);
+                gotoxy(37,13);
+                printf("Total Cost: $%.2f",TempProcedure.Cost);
+
                 VisitCost = TempProcedure.Cost;
                 CardCoverage = ExistingPatient->CardBalance * 0.85;
-                if(PaymentType == CARD_PAYMENT && (ExistingPatient->CardBalance>=CardCoverage))
-                {
-                    CashCoverage = VisitCost - CardCoverage;
-                    NewVisit->VisitPayment.card = CardCoverage;
-                    NewVisit->VisitPayment.cash = CashCoverage;
-                }
-                else
-                {
-                    CardCoverage = 0.0;
-                    CashCoverage = VisitCost;
-                    NewVisit->VisitPayment.card = CardCoverage;
-                    NewVisit->VisitPayment.cash = CashCoverage;
-                }
+                CashCoverage = VisitCost - CardCoverage;
+                NewVisit->VisitPayment.card = CardCoverage;
+                NewVisit->VisitPayment.cash = CashCoverage;
+
+                gotoxy(20,16);
+                printf("Card Coverage: $%.2f",CardCoverage);
+                gotoxy(37,18);
+                printf("Cash: $%.2f",CashCoverage);
+
+                ShowPaymentOptionsMenu();
+                do{}while(PaymentOptionsMenuController(OptionDriver(30,18,NUMERIC)==0,NewVisit,ExistingPatient));
                 break;
             }
         }
     }
     return 1;
 }
-int AddPatientVisitToFile(Visit NewVisit)
+int AddPatientVisitToFile(Visit NewVisit,Patient ExistingPatient)
 {
     FILE * VisitStream;
-    VisitStream = fopen("./DataFiles/PatientVisit.txt","r");
+    FILE * PatientStream;
+    VisitStream = fopen("./DataFiles/PatientVisit.txt","a");
+    PatientStream = fopen("./DataFiles/Patients.txt","a");
     if(!VisitStream)
     {
         fclose(VisitStream);
@@ -771,6 +822,13 @@ int AddPatientVisitToFile(Visit NewVisit)
         {
             fprintf(VisitStream,"%d\t%d\t%d\t%f\t%f",&NewVisit.DoctorID,&NewVisit.PatientID,
             &NewVisit.ProcedureCode,&NewVisit.VisitPayment.card,&NewVisit.VisitPayment.cash);
+            while(!feof(PatientStream))
+            {
+                //update employee file
+                fprintf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f\n",ExistingPatient.Id,ExistingPatient.Fname,ExistingPatient.Lname,
+                ExistingPatient.Address,ExistingPatient.Phone,ExistingPatient.Allergies,ExistingPatient.LastTreatment,
+                ExistingPatient.NextAppDate,ExistingPatient.CardBalance);
+            }
         }
     }
     fclose(VisitStream);
