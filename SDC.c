@@ -193,8 +193,12 @@ int CreateFiles(void)
             gotoxy(40,13);
             printf("4. Doctors.txt");
             char DoctorHeader[5][40] = {{"Code"},{"First_Name"},{"Last_Name"},{"Phone_Number"},{"Specialty"}};
-            fprintf(DoctorStream,"%s\t%s\t%s\t%s\t%s\n",DoctorHeader[0],DoctorHeader[1],DoctorHeader[2],
-            DoctorHeader[3],DoctorHeader[4]);
+            fprintf(DoctorStream,"%s\t%s\t%s\t%s\t%s\n",DoctorHeader[0],DoctorHeader[1],DoctorHeader[2],DoctorHeader[3],DoctorHeader[4]);
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2001,"Alfred","Mingo",9880833,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2002,"John","Mavrick",3322333,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2003,"Kobe","Loser",7036253,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2004,"Tony","Montana",9882937,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2005,"Emanuel","Robbery",5890012,"na");
             Sleep(700);
             gotoxy(30,15);
             printf("All Files Created!");
@@ -699,8 +703,6 @@ int NewPatientVisit(Visit *NewVisit)
     printf("Doctor ID     :");
     gotoxy(20,12);
     printf("Procedure Code:");
-
-    fflush(stdin);
     gotoxy(20+16,8);
     scanf("%d",&NewVisit->PatientID);
     gotoxy(20+16,10);
@@ -711,11 +713,11 @@ int NewPatientVisit(Visit *NewVisit)
     {
         return -3;
     }
-    if(IfDoctorExist(NewVisit->DoctorID)==0)
+    else if(IfDoctorExist(NewVisit->DoctorID)==0)
     {
         return -2;
     }
-    if(IfProcedureExist(NewVisit->ProcedureCode)==0)
+    else if(IfProcedureExist(NewVisit->ProcedureCode)==0)
     {
         return -1;
     }
