@@ -100,6 +100,10 @@ int NewPatientVisit(Visit *);
 int ProcessVisitTransaction(Visit *,Patient *,int);
 int ShowPaymentOptionsMenu(Visit *);
 int AddPatientVisitToFile(Visit);
+int IfPatientExist(int);
+int IfDoctorExist(int);
+int IfProcedureExist(int);
+
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -469,6 +473,80 @@ int PatientsMenuController(char option)
     }
     return 0;
 }
+int IfPatientExist(int code)
+{
+    FILE * PatientStream;
+    Patient TempPatient;
+    PatientStream = fopen("./DataFiles/Patients.txt","r");
+    if(!PatientStream)
+    {
+        return -1;
+    }
+    else
+    {
+        while(!feof(PatientStream))
+        {
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            TempPatient.NextAppDate,&TempPatient.CardBalance);
+            if(TempPatient.Id==code)
+            {
+                fclose(PatientStream);
+                return 1;
+            }
+        }
+
+    }
+    fclose(PatientStream);
+    return 0;
+}
+int IfDoctorExist(int code)
+{
+    FILE * DoctorStream;
+    Doctor TempDoctor;
+    DoctorStream = fopen("./DataFiles/Doctors.txt","r");
+    if(!DoctorStream)
+    {
+        return -1;
+    }
+    else
+    {
+        while(!feof(DoctorStream))
+        {
+            fscanf(DoctorStream,"%d\t%s\t%s\t%d\t%s",&TempDoctor.Id,TempDoctor.Fname,TempDoctor.Lname,
+            TempDoctor.Phone,&TempDoctor.Specialty);
+            if(TempDoctor.Id==code)
+            {
+                fclose(DoctorStream);
+                return 1;
+            }
+        }
+    }
+    fclose(DoctorStream);
+    return 0;
+}
+int IfProcedureExist(int code)
+{
+    FILE * ProcedureStream;
+    Procedure TempProcedure;
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    if(!ProcedureStream)
+    {
+        return -1;
+    }
+    else
+    {
+        while(!feof(ProcedureStream))
+        {
+            fscanf(ProcedureStream,"%d\t%s\t%f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
+            if(TempProcedure.Code == code)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 int AddNewPatient (Patient *NewPatient)
 {
     FILE *PatientStream;
@@ -512,7 +590,7 @@ int AddNewPatient (Patient *NewPatient)
     {
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
             TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
             TempPatient.NextAppDate,&TempPatient.CardBalance);
             NewPatient->Id = TempPatient.Id + 1;
@@ -532,7 +610,7 @@ int AddPatientToFile(Patient NewPatient)
     }
     else
     {
-        if(fprintf(PatientStream,"%d %s %s %s %d %s %s %s %.2f\n",NewPatient.Id,NewPatient.Fname,NewPatient.Lname,
+        if(fprintf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f\n",NewPatient.Id,NewPatient.Fname,NewPatient.Lname,
         NewPatient.Address,NewPatient.Phone,NewPatient.Allergies,NewPatient.LastTreatment,
         NewPatient.NextAppDate,NewPatient.CardBalance)==9)
         {
@@ -612,9 +690,9 @@ int ShowPaymentOptionsMenu(Visit *NewVisit)
             if(TempProcedure.Code == NewVisit->ProcedureCode)
             {
                 gotoxy(27,8);
-                printf("Procedure Code:");
+                printf("Procedure Code: %s",TempProcedure.Code);
                 gotoxy(27,10);
-                printf("Procedure Name:");
+                printf("Procedure Name: %s",TempProcedure.Name);
                 gotoxy(37,13);
                 printf("Cost: $%.2f",TempProcedure.Cost);
                 fclose(ProcedureStream);
@@ -644,7 +722,7 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int Payment
     {
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",&ExistingPatient->Id,ExistingPatient->Fname,ExistingPatient->Lname,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&ExistingPatient->Id,ExistingPatient->Fname,ExistingPatient->Lname,
             ExistingPatient->Address,&ExistingPatient->Phone,ExistingPatient->Allergies,ExistingPatient->LastTreatment,
             ExistingPatient->NextAppDate,&ExistingPatient->CardBalance);
             if(ExistingPatient->Id == NewVisit->PatientID)
@@ -654,7 +732,7 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient,int Payment
         }
         while(!feof(ProcedureStream))
         {
-            fscanf(ProcedureStream,"%d %s %f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
+            fscanf(ProcedureStream,"%d\t%s\t%f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
             if(TempProcedure.Code == NewVisit->ProcedureCode)
             {
                 VisitCost = TempProcedure.Cost;
@@ -691,7 +769,7 @@ int AddPatientVisitToFile(Visit NewVisit)
     {
         while(!feof(VisitStream))
         {
-            fprintf(VisitStream,"%d %d %d %f %f",&NewVisit.DoctorID,&NewVisit.PatientID,
+            fprintf(VisitStream,"%d\t%d\t%d\t%f\t%f",&NewVisit.DoctorID,&NewVisit.PatientID,
             &NewVisit.ProcedureCode,&NewVisit.VisitPayment.card,&NewVisit.VisitPayment.cash);
         }
     }
@@ -737,7 +815,7 @@ int FindAndShowPatient(int Id)
     {
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d %s %s %s %d %s %s %s %f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
             TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
             TempPatient.NextAppDate,&TempPatient.CardBalance);
             if(TempPatient.Id==Id)
