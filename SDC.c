@@ -141,7 +141,7 @@ int main(void)
     do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
     return 0;
 }
-int CreateFiles(void)
+int CreateFiles(void)//Creates Data Files Directory & txt files with default values
 {
     FILE *PatientStream;
     FILE *VisitStream;
@@ -263,7 +263,7 @@ void WelcomeScreen(void)
  * void
  * return boolean value
 */
-int LoginMenu(void)
+int LoginMenu(void) //login menu compares username and password
 {
     char UserName[50];
     char Password[15];
@@ -335,7 +335,7 @@ char OptionDriver(int x,int y,int OptionType)
     }
     return option;
 }
-void ShowMainMenu(void)
+void ShowMainMenu(void)//Displays Main Menu on screen
 {
     DefaultService();
 
@@ -362,7 +362,7 @@ void ShowMainMenu(void)
     gotoxy(61,14);
     printf("EXIT");
 }
-int MainMenuController(char option)
+int MainMenuController(char option)//Routes the entered value to a function
 {
     switch(option)
     {
@@ -383,7 +383,7 @@ int MainMenuController(char option)
     }
     return 0;
 }
-void ShowReportsMenu(void)
+void ShowReportsMenu(void)//Displays Reports Menu
 {
     DefaultService();
     gotoxy(30,5);
@@ -399,7 +399,7 @@ void ShowReportsMenu(void)
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 }
-int ReportsMenuController(char option)
+int ReportsMenuController(char option)//Routes the entered value to a function
 {
     switch(option)
     {
@@ -426,7 +426,7 @@ int ReportsMenuController(char option)
     }
     return 0;
 }
-void ShowPatientsMenu(void)
+void ShowPatientsMenu(void) //Displays Patient Menu
 {
     DefaultService();
     gotoxy(33,4);
@@ -442,7 +442,7 @@ void ShowPatientsMenu(void)
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 }
-int PatientsMenuController(char option)
+int PatientsMenuController(char option)//Routes the entered value to a function
 {
     switch(option)
     {
