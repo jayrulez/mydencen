@@ -37,7 +37,7 @@ typedef struct PATIENT
     char Fname[20];
     char Lname[20];
     char Address[20];
-    int Phone;
+    char Phone[15];
     char LastTreatment[8];
     char Allergies[50];
     char NextAppDate[10];
@@ -68,7 +68,7 @@ typedef struct DOCTOR
     int Id;
     char Fname[20];
     char Lname[20];
-    int Phone;
+    char Phone[15];
     char Specialty[20];
 }Doctor;
 
@@ -103,6 +103,8 @@ int FailPaymentOptionsMenuController(char);
 void ShowPaymentOptionsMenu(void);
 int PaymentOptionsMenuController(char,Visit*,Patient*);
 int AddPatientVisitToFile(Visit,Patient);
+void ShowAfterAddPatientVisitMenu(void);
+int AfterAddPatientVisitMenuController(char);
 int IfPatientExist(int);
 int IfDoctorExist(int);
 int IfProcedureExist(int);
@@ -183,22 +185,57 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             printf("3. Procedure.txt");
             char ProcedureHeader[3][20] = {{"Code"},{"Name"},{"Cost($)"}};
             fprintf(ProcedureStream,"%s\t%s\t%s\n",ProcedureHeader[0],ProcedureHeader[1],ProcedureHeader[2]);
-            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1001,"Dental Examination",5500.00);
-            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1002,"Cleaning",7500.00);
-            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1003,"Extraction",11500.00);
-            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1004,"Fillings",12000.00);
-            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1005,"Xray",2800.00);
-            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",1006,"Braces",7000.00);
+
+            Procedure DefaultProcedure;
+            DefaultProcedure.Code = 1001;strcpy(DefaultProcedure.Name,"Dental Examination");DefaultProcedure.Cost = 5500.00;
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
+
+            DefaultProcedure.Code = 1002;strcpy(DefaultProcedure.Name,"Cleaning");DefaultProcedure.Cost = 7500.00;
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
+
+            DefaultProcedure.Code = 1003;strcpy(DefaultProcedure.Name,"Extraction");DefaultProcedure.Cost = 11500.00;
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
+
+            DefaultProcedure.Code = 1004;strcpy(DefaultProcedure.Name,"Fillings");DefaultProcedure.Cost = 12000.00;
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
+
+            DefaultProcedure.Code = 1005;strcpy(DefaultProcedure.Name,"Xray");DefaultProcedure.Cost = 2800.00;
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
+
+            DefaultProcedure.Code = 1006;strcpy(DefaultProcedure.Name,"Braces");DefaultProcedure.Cost = 7000.00;
+            fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
             Sleep(500);
             gotoxy(40,13);
             printf("4. Doctors.txt");
             char DoctorHeader[5][40] = {{"Code"},{"First_Name"},{"Last_Name"},{"Phone_Number"},{"Specialty"}};
             fprintf(DoctorStream,"%s\t%s\t%s\t%s\t%s\n",DoctorHeader[0],DoctorHeader[1],DoctorHeader[2],DoctorHeader[3],DoctorHeader[4]);
-            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2001,"Alfred","Mingo",9880833,"na");
-            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2002,"John","Mavrick",3322333,"na");
-            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2003,"Kobe","Loser",7036253,"na");
-            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2004,"Tony","Montana",9882937,"na");
-            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",2005,"Emanuel","Robbery",5890012,"na");
+
+            Doctor DefaultDoctor;
+            DefaultDoctor.Id=2001;strcpy(DefaultDoctor.Fname,"John");strcpy(DefaultDoctor.Lname,"Mavrick");
+            strcpy(DefaultDoctor.Phone,"876-988-0833");strcpy(DefaultDoctor.Specialty,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
+            DefaultDoctor.Phone,DefaultDoctor.Specialty);
+
+            DefaultDoctor.Id=2002;strcpy(DefaultDoctor.Fname,"Alfred");strcpy(DefaultDoctor.Lname,"Mingo");
+            strcpy(DefaultDoctor.Phone,"876-332-2333");strcpy(DefaultDoctor.Specialty,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
+            DefaultDoctor.Phone,DefaultDoctor.Specialty);
+
+            DefaultDoctor.Id=2003;strcpy(DefaultDoctor.Fname,"kobe");strcpy(DefaultDoctor.Lname,"loser");
+            strcpy(DefaultDoctor.Phone,"876-703-6253");strcpy(DefaultDoctor.Specialty,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
+            DefaultDoctor.Phone,DefaultDoctor.Specialty);
+
+            DefaultDoctor.Id=2004;strcpy(DefaultDoctor.Fname,"Tony");strcpy(DefaultDoctor.Lname,"Montana");
+            strcpy(DefaultDoctor.Phone,"876-988-2937");strcpy(DefaultDoctor.Specialty,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
+            DefaultDoctor.Phone,DefaultDoctor.Specialty);
+
+            DefaultDoctor.Id=2005;strcpy(DefaultDoctor.Fname,"Emanuel");strcpy(DefaultDoctor.Lname,"Robbery");
+            strcpy(DefaultDoctor.Phone,"876-589-0012");strcpy(DefaultDoctor.Specialty,"na");
+            fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
+            DefaultDoctor.Phone,DefaultDoctor.Specialty);
+
             Sleep(700);
             gotoxy(30,15);
             printf("All Files Created!");
@@ -287,7 +324,7 @@ int LoginMenu(void) //login menu compares username and password
             FILE *UserFile;
             char name[50];
             char pass[15];
-            UserFile = fopen("./DataFiles/UserFile.txt","+r");
+            UserFile = fopen("./DataFiles/UserFile.txt","r");
             if(UserFile)
             {
                 while(UserFile!=NULL)
@@ -521,8 +558,8 @@ int IfPatientExist(int code)
         PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
-            TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
             TempPatient.NextAppDate,&TempPatient.CardBalance);
             if(TempPatient.Id==code)
             {
@@ -549,8 +586,8 @@ int IfDoctorExist(int code)
         fscanf(DoctorStream,"%s\t%s\t%s\t%s\t%s",DoctorHeader[0],DoctorHeader[1],DoctorHeader[2],DoctorHeader[3],DoctorHeader[4]);
         while(!feof(DoctorStream))
         {
-            fscanf(DoctorStream,"%d\t%s\t%s\t%d\t%s",&TempDoctor.Id,TempDoctor.Fname,TempDoctor.Lname,
-            TempDoctor.Phone,&TempDoctor.Specialty);
+            fscanf(DoctorStream,"%d\t%s\t%s\t%s\t%s",&TempDoctor.Id,TempDoctor.Fname,TempDoctor.Lname,
+            TempDoctor.Phone,TempDoctor.Specialty);
             if(TempDoctor.Id==code)
             {
                 fclose(DoctorStream);
@@ -612,7 +649,7 @@ int AddNewPatient (Patient *NewPatient)
     gotoxy(20+14,12);
     scanf("%s",NewPatient->Address);
     gotoxy(20+14,14);
-    scanf("%d",&(NewPatient->Phone));
+    scanf("%s",NewPatient->Phone);
     gotoxy(20+14,16);
     scanf("%s",NewPatient->Allergies);
     TempPatient.Id = 0;
@@ -632,8 +669,8 @@ int AddNewPatient (Patient *NewPatient)
         PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
-            TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
             TempPatient.NextAppDate,&TempPatient.CardBalance);
             NewPatient->Id = TempPatient.Id + 1;
         }
@@ -651,7 +688,7 @@ int AddPatientToFile(Patient NewPatient)
     }
     else
     {
-        if(fprintf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%.2f\n",NewPatient.Id,NewPatient.Fname,NewPatient.Lname,
+        if(fprintf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\n",NewPatient.Id,NewPatient.Fname,NewPatient.Lname,
         NewPatient.Address,NewPatient.Phone,NewPatient.Allergies,NewPatient.LastTreatment,
         NewPatient.NextAppDate,NewPatient.CardBalance)==9)
         {
@@ -725,7 +762,6 @@ int NewPatientVisit(Visit *NewVisit)
 }
 void ShowFailPaymentOptionsMenu(void)
 {
-    DefaultService();
     gotoxy(23,15);
     printf("[1]<--New Visit");
     gotoxy(44,15);
@@ -756,9 +792,9 @@ int FailPaymentOptionsMenuController(char option)
 void ShowPaymentOptionsMenu(void)
 {
     DefaultService();
-    gotoxy(30,19);
+    gotoxy(30,18);
     printf("[1]Save");
-    gotoxy(40,19);
+    gotoxy(40,18);
     printf("[2]Cancel");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
@@ -769,6 +805,8 @@ int PaymentOptionsMenuController(char option, Visit *NewVisit, Patient *Existing
     {
         case '1':
             AddPatientVisitToFile(*NewVisit,*ExistingPatient);
+            ShowAfterAddPatientVisitMenu();
+            do{}while(AfterAddPatientVisitMenuController(OptionDriver(30,20,NUMERIC))==0);
         break;
         case '2':
             ShowPatientsMenu();
@@ -793,7 +831,6 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
     PatientStream = fopen("./DataFiles/Patients.txt","r");
     if(!ProcedureStream || !PatientStream)
     {
-        fclose(ProcedureStream);
         return 0;
     }
     else
@@ -803,8 +840,8 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
         PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&ExistingPatient->Id,ExistingPatient->Fname,ExistingPatient->Lname,
-            ExistingPatient->Address,&ExistingPatient->Phone,ExistingPatient->Allergies,ExistingPatient->LastTreatment,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&ExistingPatient->Id,ExistingPatient->Fname,ExistingPatient->Lname,
+            ExistingPatient->Address,ExistingPatient->Phone,ExistingPatient->Allergies,ExistingPatient->LastTreatment,
             ExistingPatient->NextAppDate,&ExistingPatient->CardBalance);
             if(ExistingPatient->Id == NewVisit->PatientID)
             {
@@ -818,26 +855,24 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
             fscanf(ProcedureStream,"%d\t%s\t%f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
             if(TempProcedure.Code == NewVisit->ProcedureCode)
             {
-                gotoxy(27,8);
-                printf("Procedure Code: %s",TempProcedure.Code);
-                gotoxy(27,10);
+                ShowPaymentOptionsMenu();
+                gotoxy(27,4);
+                printf("Procedure Code: %d",TempProcedure.Code);
+                gotoxy(27,6);
                 printf("Procedure Name: %s",TempProcedure.Name);
-                gotoxy(37,13);
+                gotoxy(37,9);
                 printf("Total Cost: $%.2f",TempProcedure.Cost);
-
                 VisitCost = TempProcedure.Cost;
-                CardCoverage = ExistingPatient->CardBalance * 0.85;
+                CardCoverage = (ExistingPatient->CardBalance) * 0.85;
                 CashCoverage = VisitCost - CardCoverage;
                 NewVisit->VisitPayment.card = CardCoverage;
                 NewVisit->VisitPayment.cash = CashCoverage;
 
-                gotoxy(20,16);
+                gotoxy(27,12);
                 printf("Card Coverage: $%.2f",CardCoverage);
-                gotoxy(37,18);
+                gotoxy(27,14);
                 printf("Cash: $%.2f",CashCoverage);
-
-                ShowPaymentOptionsMenu();
-                do{}while(PaymentOptionsMenuController(OptionDriver(30,18,NUMERIC)==0,NewVisit,ExistingPatient));
+                do{}while(PaymentOptionsMenuController(OptionDriver(30,21,NUMERIC),NewVisit,ExistingPatient));
                 break;
             }
         }
@@ -850,30 +885,67 @@ int AddPatientVisitToFile(Visit NewVisit,Patient ExistingPatient)
     FILE * PatientStream;
     VisitStream = fopen("./DataFiles/PatientVisit.txt","a");
     PatientStream = fopen("./DataFiles/Patients.txt","a");
-    if(!VisitStream)
+    DefaultService();
+    if(!VisitStream || !PatientStream)
     {
-        fclose(VisitStream);
+        if(!VisitStream)
+        {
+            gotoxy(15,7);
+            printf("Error: Could not save data to \"PatientVisit\" file");
+        }
+        if(!PatientStream)
+        {
+            gotoxy(15,9);
+            printf("Error: Could not save data to \"Patients\" file");
+        }
         return 0;
     }
     else
     {
-        while(!feof(VisitStream))
-        {
-            fprintf(VisitStream,"%d\t%d\t%d\t%.2f\t%.2f",&NewVisit.DoctorID,&NewVisit.PatientID,
-            &NewVisit.ProcedureCode,&NewVisit.VisitPayment.card,&NewVisit.VisitPayment.cash);
-            while(!feof(PatientStream))
-            {
+
+        fprintf(VisitStream,"%d\t%d\t%d\t%.2f\t%.2f\n",NewVisit.DoctorID,NewVisit.PatientID,
+        NewVisit.ProcedureCode,NewVisit.VisitPayment.card,NewVisit.VisitPayment.cash);
+
                 /*
                 //update employee file
                 fprintf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%.2f\n",ExistingPatient.Id,ExistingPatient.Fname,ExistingPatient.Lname,
                 ExistingPatient.Address,ExistingPatient.Phone,ExistingPatient.Allergies,ExistingPatient.LastTreatment,
                 ExistingPatient.NextAppDate,ExistingPatient.CardBalance);
                 */
-            }
-        }
+        gotoxy(27,7);
+        printf("Transaction Successfull!");
     }
     fclose(VisitStream);
     return 1;
+}
+void ShowAfterAddPatientVisitMenu(void)
+{
+    gotoxy(23,15);
+    printf("[1]<--New Visit");
+    gotoxy(44,15);
+    printf("[2]Patient Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int AfterAddPatientVisitMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+            Visit NewV;
+            Visit *NewVisit = &NewV;
+            NewPatientVisit(NewVisit);
+        break;
+        case '2':
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
 }
 void ShowNewPatientVisitMenu(void)
 {
@@ -917,8 +989,8 @@ int FindAndShowPatient(int Id)
         PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
         while(!feof(PatientStream))
         {
-            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
-            TempPatient.Address,&TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
             TempPatient.NextAppDate,&TempPatient.CardBalance);
             if(TempPatient.Id==Id)
             {
@@ -931,7 +1003,7 @@ int FindAndShowPatient(int Id)
                 gotoxy(17,11);
                 printf("Address       : %s",TempPatient.Address);
                 gotoxy(17,12);
-                printf("Phone Number  : %d",TempPatient.Phone);
+                printf("Phone Number  : %s",TempPatient.Phone);
                 gotoxy(17,13);
                 printf("Allergies     : %s",TempPatient.Allergies);
                 gotoxy(17,14);
