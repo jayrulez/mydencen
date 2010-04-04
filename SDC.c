@@ -905,12 +905,7 @@ int AddPatientVisitToFile(Visit NewVisit,Patient ExistingPatient)
 
         fprintf(VisitStream,"%d\t%d\t%d\t%.2f\t%.2f\n",NewVisit.DoctorID,NewVisit.PatientID,
         NewVisit.ProcedureCode,NewVisit.VisitPayment.card,NewVisit.VisitPayment.cash);
-                /*
-                //update employee file
-                fprintf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%.2f\n",ExistingPatient.Id,ExistingPatient.Fname,ExistingPatient.Lname,
-                ExistingPatient.Address,ExistingPatient.Phone,ExistingPatient.Allergies,ExistingPatient.LastTreatment,
-                ExistingPatient.NextAppDate,ExistingPatient.CardBalance);
-                */
+        UpdateRecordInPatientFile(ExistingPatient);
         gotoxy(27,7);
         printf("Transaction Successfull!");
     }
@@ -921,6 +916,7 @@ int UpdateRecordInPatientFile(Patient UpdatedPatient)
 {
     FILE * PatientStream;
     Patient TempPatient;
+    int Position=0;
     PatientStream = fopen("./DataFiles/Patients.txt","r+");
     if(!PatientStream)
     {
@@ -930,9 +926,21 @@ int UpdateRecordInPatientFile(Patient UpdatedPatient)
     {
         while(!feof(PatientStream))
         {
-
+            Position = ftell(PatientStream);
+            fscanf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+            TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+            TempPatient.NextAppDate,&TempPatient.CardBalance);
+            if(TempPatient.Id == UpdatedPatient.Id)
+            {
+                fseek(PatientStream,Position-1,SEEK_SET);
+                fprintf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\n",UpdatedPatient.Id,UpdatedPatient.Fname,UpdatedPatient.Lname,
+                UpdatedPatient.Address,UpdatedPatient.Phone,UpdatedPatient.Allergies,UpdatedPatient.LastTreatment,
+                UpdatedPatient.NextAppDate,UpdatedPatient.CardBalance);
+                break;
+            }
         }
     }
+    fclose(PatientStream);
     return 1;
 }
 void ShowAfterAddPatientVisitMenu(void)
