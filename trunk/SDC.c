@@ -108,7 +108,7 @@ int AfterAddPatientVisitMenuController(char);
 int IfPatientExist(int);
 int IfDoctorExist(int);
 int IfProcedureExist(int);
-
+int UpdateRecordInPatientFile(Patient);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -905,7 +905,6 @@ int AddPatientVisitToFile(Visit NewVisit,Patient ExistingPatient)
 
         fprintf(VisitStream,"%d\t%d\t%d\t%.2f\t%.2f\n",NewVisit.DoctorID,NewVisit.PatientID,
         NewVisit.ProcedureCode,NewVisit.VisitPayment.card,NewVisit.VisitPayment.cash);
-
                 /*
                 //update employee file
                 fprintf(PatientStream,"%d\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%.2f\n",ExistingPatient.Id,ExistingPatient.Fname,ExistingPatient.Lname,
@@ -916,6 +915,24 @@ int AddPatientVisitToFile(Visit NewVisit,Patient ExistingPatient)
         printf("Transaction Successfull!");
     }
     fclose(VisitStream);
+    return 1;
+}
+int UpdateRecordInPatientFile(Patient UpdatedPatient)
+{
+    FILE * PatientStream;
+    Patient TempPatient;
+    PatientStream = fopen("./DataFiles/Patients.txt","r+");
+    if(!PatientStream)
+    {
+        return 0;
+    }
+    else
+    {
+        while(!feof(PatientStream))
+        {
+
+        }
+    }
     return 1;
 }
 void ShowAfterAddPatientVisitMenu(void)
