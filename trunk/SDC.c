@@ -656,7 +656,7 @@ int AddNewPatient (Patient *NewPatient)
     NewPatient->Id = 1;
     strcpy(NewPatient->NextAppDate,"N/A");
     strcpy(NewPatient->LastTreatment,"N/A");
-    NewPatient->CardBalance = 0.00;
+    NewPatient->CardBalance = 4000.00;
     PatientStream = fopen("./DataFiles/Patients.txt","r");
     if(!PatientStream)
     {
