@@ -1097,7 +1097,7 @@ void gotoxy(int x, int y)
     //set the cursor position based on the above x and y values
     SetConsoleCursorPosition(handle,CursorCoord);
 }
-void ScreenFrame(void)
+void ScreenFrame(void)//Draws screen border
 {
     for(int x=0;x<80;x++)
     {
@@ -1123,7 +1123,7 @@ void ScreenFrame(void)
     printf("%c",(unsigned char)188);
     gotoxy(0,0);
 }
-void DefaultService(void)
+void DefaultService(void)//Sets up the screen fo reach new menu
 {
     system("cls");
     ScreenFrame();
