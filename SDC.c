@@ -1,8 +1,8 @@
 /*Smiles Dental Centre
   BSCIT
   Group Members:      Name                 Id#
-  						Dyonne Duberry        0802189
-                  Xavier Lowe           0802488
+                    Dyonne Duberry        0802189
+                    Xavier Lowe           0802488
 
 	(c)2010
 */
