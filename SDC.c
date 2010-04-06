@@ -108,7 +108,11 @@ int AfterAddPatientVisitMenuController(char);
 int IfPatientExist(int);
 int IfDoctorExist(int);
 int IfProcedureExist(int);
+int UpdatePatient(int);
+void ShowUpdatePatientMenu(void);
+int UpdatePatientMenuController(char,Patient);
 int UpdateRecordInPatientFile(Patient);
+void ShowSearchPatientMenu(void);
 //DoctorReportMenu
 void ShowDocReportSelect(void);
 //Update Fees Menu
@@ -171,14 +175,14 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             Sleep(500);
             gotoxy(40,10);
             printf("1. Patients.txt");
-            char PatientHeader[9][40] = {{"Code"},{"First_Name"},{"Last_Name"},{"Address"},{"Phone_Number"},{"Allergies"},
+            char PatientHeader[9][40] = {{"Id"},{"First_Name"},{"Last_Name"},{"Address"},{"Phone_Number"},{"Allergies"},
             {"Last_Treatment"},{"Next_Appointment_Date"},{"Card_Balance"}};
             fprintf(PatientStream,"%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",PatientHeader[0],PatientHeader[1],PatientHeader[2],
             PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
             Sleep(500);
             gotoxy(40,11);
             printf("2. PatientVisit.txt");
-            char VisitHeader[5][30] = {{"Patient_Code"},{"Doctor_Code"},{"Procedure_Code"},{"Card_Payment($)"},{"Cash_Payment($)"}};
+            char VisitHeader[5][30] = {{"Patient_Id"},{"Doctor_Id"},{"Procedure_Code"},{"Card_Payment($)"},{"Cash_Payment($)"}};
             fprintf(VisitStream,"%s\t%s\t%s\t%s\t%s\n",VisitHeader[0],VisitHeader[1],VisitHeader[2],VisitHeader[3],VisitHeader[4]);
             Sleep(500);
             gotoxy(40,12);
@@ -207,7 +211,7 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             Sleep(500);
             gotoxy(40,13);
             printf("4. Doctors.txt");
-            char DoctorHeader[5][40] = {{"Code"},{"First_Name"},{"Last_Name"},{"Phone_Number"},{"Specialty"}};
+            char DoctorHeader[5][40] = {{"Id"},{"First_Name"},{"Last_Name"},{"Phone_Number"},{"Specialty"}};
             fprintf(DoctorStream,"%s\t%s\t%s\t%s\t%s\n",DoctorHeader[0],DoctorHeader[1],DoctorHeader[2],DoctorHeader[3],DoctorHeader[4]);
 
             Doctor DefaultDoctor;
@@ -534,6 +538,9 @@ int PatientsMenuController(char option)//Routes the entered value to a function
             do{}while(ViewPatientRecordMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '4':
+            UpdatePatient(PatientSearch());
+            ShowSearchPatientMenu();
+            do{}while(ViewPatientRecordMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -824,9 +831,9 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
     FILE *ProcedureStream;
     FILE *PatientStream;
     Procedure TempProcedure;
-    float VisitCost;
-    float CardCoverage;
-    float CashCoverage;
+    float VisitCost=0;
+    float CardCoverage=0;
+    float CashCoverage=0;
     ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
     PatientStream = fopen("./DataFiles/Patients.txt","r");
     if(!ProcedureStream || !PatientStream)
@@ -845,6 +852,7 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
             ExistingPatient->NextAppDate,&ExistingPatient->CardBalance);
             if(ExistingPatient->Id == NewVisit->PatientID)
             {
+                fclose(PatientStream);
                 break;
             }
         }
@@ -864,18 +872,29 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
                 printf("Total Cost: $%.2f",TempProcedure.Cost);
                 VisitCost = TempProcedure.Cost;
                 CardCoverage = (ExistingPatient->CardBalance) * 0.85;
-                CashCoverage = VisitCost - CardCoverage;
+                if(VisitCost>=CardCoverage)
+                {
+                    CashCoverage = VisitCost - CardCoverage;
+                    ExistingPatient->CardBalance = ExistingPatient->CardBalance - CardCoverage;
+                }
+                else
+                {
+                    CardCoverage = VisitCost;
+                    ExistingPatient->CardBalance = ExistingPatient->CardBalance - CardCoverage;
+                }
                 NewVisit->VisitPayment.card = CardCoverage;
                 NewVisit->VisitPayment.cash = CashCoverage;
 
                 gotoxy(27,12);
                 printf("Card Coverage: $%.2f",CardCoverage);
                 gotoxy(27,14);
-                printf("Cash: $%.2f",CashCoverage);
+                printf("Cash Needed: $%.2f",CashCoverage);
+                fclose(ProcedureStream);
                 do{}while(PaymentOptionsMenuController(OptionDriver(30,21,NUMERIC),NewVisit,ExistingPatient));
                 break;
             }
         }
+        fclose(ProcedureStream);
     }
     return 1;
 }
@@ -903,7 +922,7 @@ int AddPatientVisitToFile(Visit NewVisit,Patient ExistingPatient)
     else
     {
 
-        fprintf(VisitStream,"%d\t%d\t%d\t%.2f\t%.2f\n",NewVisit.DoctorID,NewVisit.PatientID,
+        fprintf(VisitStream,"%d\t%d\t%d\t%.2f\t%.2f\n",NewVisit.PatientID,NewVisit.DoctorID,
         NewVisit.ProcedureCode,NewVisit.VisitPayment.card,NewVisit.VisitPayment.cash);
         UpdateRecordInPatientFile(ExistingPatient);
         gotoxy(27,7);
@@ -924,6 +943,9 @@ int UpdateRecordInPatientFile(Patient UpdatedPatient)
     }
     else
     {
+        char PatientHeader[9][40];
+        fscanf(PatientStream,"%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",PatientHeader[0],PatientHeader[1],PatientHeader[2],
+        PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
         while(!feof(PatientStream))
         {
             Position = ftell(PatientStream);
@@ -932,7 +954,7 @@ int UpdateRecordInPatientFile(Patient UpdatedPatient)
             TempPatient.NextAppDate,&TempPatient.CardBalance);
             if(TempPatient.Id == UpdatedPatient.Id)
             {
-                fseek(PatientStream,Position-1,SEEK_SET);
+                fseek(PatientStream,Position+1,SEEK_SET);
                 fprintf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%.2f\n",UpdatedPatient.Id,UpdatedPatient.Fname,UpdatedPatient.Lname,
                 UpdatedPatient.Address,UpdatedPatient.Phone,UpdatedPatient.Allergies,UpdatedPatient.LastTreatment,
                 UpdatedPatient.NextAppDate,UpdatedPatient.CardBalance);
@@ -996,6 +1018,175 @@ int PatientSearch(void)
     scanf("%d",&id);
     return id;
 }
+int UpdatePatient(int Id)
+{
+    FILE * PatientStream;
+    do
+    {
+        Patient TempPatient;
+        DefaultService();
+        int found = 0;
+        PatientStream = fopen("./DataFiles/Patients.txt","r");
+        if(!PatientStream)
+        {
+            fclose(PatientStream);
+            return 0;
+        }
+        else
+        {
+            char PatientHeader[9][40];
+            fscanf(PatientStream,"%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",PatientHeader[0],PatientHeader[1],PatientHeader[2],
+            PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
+            while(!feof(PatientStream))
+            {
+                fscanf(PatientStream,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+                TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+                TempPatient.NextAppDate,&TempPatient.CardBalance);
+                if(TempPatient.Id==Id)
+                {
+                    gotoxy(17,5);
+                    printf("Patient Id    : %d",TempPatient.Id);
+                    gotoxy(17,6);
+                    printf("First Name    : %s",TempPatient.Fname);
+                    gotoxy(17,7);
+                    printf("Last Name     : %s",TempPatient.Lname);
+                    gotoxy(17,8);
+                    printf("Address       : %s",TempPatient.Address);
+                    gotoxy(17,9);
+                    printf("Phone Number  : %s",TempPatient.Phone);
+                    gotoxy(17,10);
+                    printf("Allergies     : %s",TempPatient.Allergies);
+                    gotoxy(17,11);
+                    printf("Last Treatment: %s",TempPatient.LastTreatment);
+                    gotoxy(17,12);
+                    printf("Next AppDate  : %s",TempPatient.NextAppDate);
+                    gotoxy(17,13);
+                    printf("Card Balance  : %.2f",TempPatient.CardBalance);
+                    found = 1;
+                    fclose(PatientStream);
+                    ShowUpdatePatientMenu();
+                    do{}while(UpdatePatientMenuController(OptionDriver(40,16,NUMERIC),TempPatient)==0);
+                    break;
+                }
+            }
+            if(found==0)
+            {
+                fclose(PatientStream);
+                gotoxy(25,9);
+                printf("Patient Record not found!");
+                return -1;
+            }
+        }
+    }while(1);
+    return 1;
+}
+void ShowUpdatePatientMenu(void)
+{
+    gotoxy(30,3);
+    printf("UPDATE PATIENT MENU");
+    gotoxy(10,15);
+    printf("[1]First Name");
+    gotoxy(10,16);
+    printf("[2]Last Name");
+    gotoxy(10,17);
+    printf("[3]Address");
+    gotoxy(10,18);
+    printf("[4]Phone Number");
+    gotoxy(10,19);
+    printf("[5]Allergies");
+    gotoxy(10,20);
+    printf("[6]Last Treatment");
+    gotoxy(10,21);
+    printf("[7]Next AppDate");
+    gotoxy(10,22);
+    printf("[8]Card Balance");
+    gotoxy(30,22);
+    printf("[<-]Search Patient");
+    gotoxy(53,22);
+    printf("[9]Patient Menu");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int UpdatePatientMenuController(char option,Patient TempPatient)
+{
+    DefaultService();
+    gotoxy(30,5);
+    printf("Update Patient Field");
+    fflush(stdin);
+    switch(option)
+    {
+        case '1':
+            gotoxy(20,11);
+            printf("First Name:");
+            gotoxy(20+12,11);
+            scanf("%s",TempPatient.Fname);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '2':
+            gotoxy(20,11);
+            printf("Last Name:");
+            gotoxy(20+11,11);
+            scanf("%s",TempPatient.Lname);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '3':
+            gotoxy(20,11);
+            printf("Address:");
+            gotoxy(20+9,11);
+            scanf("%s",TempPatient.Address);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '4':
+            gotoxy(20,11);
+            printf("Phone Number:");
+            gotoxy(20+13,11);
+            scanf("%s",TempPatient.Phone);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '5':
+            gotoxy(20,11);
+            printf("Allergies:");
+            gotoxy(20+11,11);
+            scanf("%s",TempPatient.Allergies);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '6':
+            gotoxy(20,11);
+            printf("Last Treatment:");
+            gotoxy(20+16,11);
+            scanf("%s",TempPatient.LastTreatment);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '7':
+            gotoxy(20,11);
+            printf("Next AppDate:");
+            gotoxy(20+14,11);
+            scanf("%s",TempPatient.NextAppDate);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '8':
+            gotoxy(20,11);
+            printf("Card Balance:");
+            gotoxy(20+14,11);
+            scanf("%f",&TempPatient.CardBalance);
+            UpdateRecordInPatientFile(TempPatient);
+        break;
+        case '9':
+            ShowPatientsMenu();
+            do{}while(PatientsMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        case (char)VK_LEFT:
+
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        default:
+            return 0;
+    }
+    return 1;
+}
 int FindAndShowPatient(int Id)
 {
     FILE * PatientStream;
@@ -1049,8 +1240,19 @@ int FindAndShowPatient(int Id)
 }
 void ShowViewPatientRecord(void)
 {
-    gotoxy(30,4);
-    printf("VIEW PATIENT MENU");
+    gotoxy(29,4);
+    printf("SEARCH PATIENT MENU");
+    gotoxy(20,19);
+    printf("[1]Patient Menu");
+    gotoxy(40,19);
+    printf("[2]<--Search Patient");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+void ShowSearchPatientMenu(void)
+{
+    gotoxy(29,4);
+    printf("SEARCH PATIENT MENU");
     gotoxy(20,19);
     printf("[1]Patient Menu");
     gotoxy(40,19);
