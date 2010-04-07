@@ -1327,13 +1327,13 @@ int UpdateFeesMenuController(char option)
 {
     float fee;
     DefaultService();
-    gotoxy(30,5);
+    gotoxy(30,2);
     printf("Update Procedure Fees");
     fflush(stdin);
     switch(option)
     {
         case '1':
-            FindAndShowProcedure(1001,25,9);
+            FindAndShowProcedure(1001,25,6);
             gotoxy(20,14);
             printf("Dental Examination:");
             gotoxy(20+20,14);
@@ -1342,7 +1342,7 @@ int UpdateFeesMenuController(char option)
             do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1001,fee)==0);
         break;
         case '2':
-            FindAndShowProcedure(1002,25,9);
+            FindAndShowProcedure(1002,25,6);
             gotoxy(20,14);
             printf("Cleaning:");
             gotoxy(20+10,14);
@@ -1351,7 +1351,7 @@ int UpdateFeesMenuController(char option)
             do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1002,fee)==0);
         break;
         case '3':
-            FindAndShowProcedure(1003,25,9);
+            FindAndShowProcedure(1003,25,6);
             gotoxy(20,14);
             printf("Extraction:");
             gotoxy(20+12,14);
@@ -1360,7 +1360,7 @@ int UpdateFeesMenuController(char option)
             do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1003,fee)==0);
         break;
         case '4':
-            FindAndShowProcedure(1004,25,9);
+            FindAndShowProcedure(1004,25,6);
             gotoxy(20,14);
             printf("Filling:");
             gotoxy(20+9,14);
@@ -1369,7 +1369,7 @@ int UpdateFeesMenuController(char option)
             do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1004,fee)==0);
         break;
         case '5':
-            FindAndShowProcedure(1005,25,9);
+            FindAndShowProcedure(1005,25,6);
             gotoxy(20,14);
             printf("X-Ray:");
             gotoxy(20+7,14);
@@ -1378,7 +1378,7 @@ int UpdateFeesMenuController(char option)
             do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1005,fee)==0);
         break;
         case '6':
-            FindAndShowProcedure(1006,25,9);
+            FindAndShowProcedure(1006,25,6);
             gotoxy(20,14);
             printf("Braces:");
             gotoxy(20+8,14);
@@ -1417,6 +1417,7 @@ int UpdateProcedureFee(int code, float fee)
             {
                 fseek(ProcedureStream,Position+1,SEEK_SET);
                 fprintf(ProcedureStream,"%d\t%s\t%.2f\n",TempProcedure.Code,TempProcedure.Name,fee);
+                fclose(ProcedureStream);
                 return 1;
             }
         }
@@ -1468,9 +1469,9 @@ int VerifyUpdateProcedureFeeMenuController(char option,int code,float fee)
 }
 void ShowAfterUpdateFeeMenu(void)
 {
-    gotoxy(25,18);
+    gotoxy(17,18);
     printf("[1]Update Fees");
-    gotoxy(42,18);
+    gotoxy(37,18);
     printf("[Esc]Return To Main Menu");
 }
 int AfterUpdateFeeMenuController(char option)
@@ -1512,6 +1513,7 @@ int FindAndShowProcedure(int code,int x, int y)
                 printf("Name   : %s",TempProcedure.Name);
                 gotoxy(x,y+4);
                 printf("Fee    : $%.2f",TempProcedure.Cost);
+                fclose(ProcedureStream);
                 return 1;
             }
         }
