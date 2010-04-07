@@ -313,8 +313,18 @@ int LoginMenu(void) //login menu compares username and password
 {
     char UserName[50];
     char Password[15];
-    DefaultService();
+    int attempt = 0;
+    int incorrect =0;
     do{
+        DefaultService();
+        if(incorrect == 1)
+        {
+            gotoxy(20,5);
+            printf("Failed: Incorrect username or password\b");
+        }
+        attempt+=1;
+        gotoxy(30,3);
+        printf("Attempt %d of 3",attempt);
         gotoxy(25,12);
         printf("UserName:");
         gotoxy(25,14);
@@ -330,27 +340,15 @@ int LoginMenu(void) //login menu compares username and password
         }
         else
         {
-            FILE *UserFile;
-            char name[50];
-            char pass[15];
-            UserFile = fopen("./DataFiles/UserFile.txt","r");
-            if(UserFile)
-            {
-                while(UserFile!=NULL)
-                {
-                    fscanf(UserFile,"%s\t%s",name,pass);
-                    if(strcmp(name,AdminName)==0 && strcmp(pass,Password)==0)
-                    {
-                        return USER_BASIC;
-                    }
-                }
-                fclose(UserFile);
-            }
+            incorrect = 1;
         }
-        DefaultService();
-        gotoxy(20,3);
-        printf("Failed: Incorrect username or password");
-    }while(1);
+    }while(attempt!=3);
+    gotoxy(33,17);
+    printf("System Locked!");
+    gotoxy(30,20);
+    printf("Press any key to Exit");
+    GetChar();
+    exit(0);
     return 0;
 }
 char OptionDriver(int x,int y,int OptionType)
@@ -425,6 +423,7 @@ int MainMenuController(char option)//Routes the entered value to a function
             do{}while(UpdateFeesMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '4':
+            exit(0);
         break;
     }
     return 0;
