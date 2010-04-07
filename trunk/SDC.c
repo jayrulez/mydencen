@@ -118,6 +118,12 @@ void ShowDocReportSelect(void);
 //Update Fees Menu
 void ShowUpdateFeesMenu(void);
 int UpdateFeesMenuController(char);
+void ShowVerifyUpdateProcedureFee(void);
+int VerifyUpdateProcedureFeeMenuController(char,int,float);
+int VerifyUpdateProcedureFee(int,float);
+void ShowAfterUpdateFeeMenu(void);
+int AfterUpdateFeeMenuController(char);
+int FindAndShowProcedure(int ,int, int);
 
 
 //Login
@@ -191,7 +197,7 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             fprintf(ProcedureStream,"%s\t%s\t%s\n",ProcedureHeader[0],ProcedureHeader[1],ProcedureHeader[2]);
 
             Procedure DefaultProcedure;
-            DefaultProcedure.Code = 1001;strcpy(DefaultProcedure.Name,"Dental Examination");DefaultProcedure.Cost = 5500.00;
+            DefaultProcedure.Code = 1001;strcpy(DefaultProcedure.Name,"Dental-Examination");DefaultProcedure.Cost = 5500.00;
             fprintf(ProcedureStream,"%d\t%s\t%.2f\n",DefaultProcedure.Code,DefaultProcedure.Name,DefaultProcedure.Cost);
 
             DefaultProcedure.Code = 1002;strcpy(DefaultProcedure.Name,"Cleaning");DefaultProcedure.Cost = 7500.00;
@@ -249,7 +255,6 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             fclose(PatientStream);
             fclose(ProcedureStream);
             fclose(DoctorStream);
-            fflush(stdin);
             GetChar();
             return 1;
         }
@@ -1320,13 +1325,139 @@ void ShowUpdateFeesMenu(void)
 
 int UpdateFeesMenuController(char option)
 {
+    float fee;
+    DefaultService();
+    gotoxy(30,5);
+    printf("Update Procedure Fees");
+    fflush(stdin);
     switch(option)
     {
         case '1':
+            FindAndShowProcedure(1001,25,9);
+            gotoxy(20,14);
+            printf("Dental Examination:");
+            gotoxy(20+20,14);
+            scanf("%f",&fee);
+            ShowVerifyUpdateProcedureFee();
+            do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1001,fee)==0);
         break;
         case '2':
+            FindAndShowProcedure(1002,25,9);
+            gotoxy(20,14);
+            printf("Cleaning:");
+            gotoxy(20+10,14);
+            scanf("%f",&fee);
+            ShowVerifyUpdateProcedureFee();
+            do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1002,fee)==0);
         break;
         case '3':
+            FindAndShowProcedure(1003,25,9);
+            gotoxy(20,14);
+            printf("Extraction:");
+            gotoxy(20+12,14);
+            scanf("%f",&fee);
+            ShowVerifyUpdateProcedureFee();
+            do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1003,fee)==0);
+        break;
+        case '4':
+            FindAndShowProcedure(1004,25,9);
+            gotoxy(20,14);
+            printf("Filling:");
+            gotoxy(20+9,14);
+            scanf("%f",&fee);
+            ShowVerifyUpdateProcedureFee();
+            do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1004,fee)==0);
+        break;
+        case '5':
+            FindAndShowProcedure(1005,25,9);
+            gotoxy(20,14);
+            printf("X-Ray:");
+            gotoxy(20+7,14);
+            scanf("%f",&fee);
+            ShowVerifyUpdateProcedureFee();
+            do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1005,fee)==0);
+        break;
+        case '6':
+            FindAndShowProcedure(1006,25,9);
+            gotoxy(20,14);
+            printf("Braces:");
+            gotoxy(20+8,14);
+            scanf("%f",&fee);
+            ShowVerifyUpdateProcedureFee();
+            do{}while(VerifyUpdateProcedureFeeMenuController(OptionDriver(30,21,NUMERIC),1006,fee)==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        default:
+            return 0;
+    }
+    return 0;
+}
+int UpdateProcedureFee(int code, float fee)
+{
+    FILE * ProcedureStream;
+    Procedure TempProcedure;
+    int Position=0;
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r+");
+    if(!ProcedureStream)
+    {
+        return 0;
+    }
+    else
+    {
+        char ProcedureHeader[3][20];
+        fscanf(ProcedureStream,"%s\t%s\t%s",ProcedureHeader[0],ProcedureHeader[1],ProcedureHeader[2]);
+        while(!feof(ProcedureStream))
+        {
+            Position = ftell(ProcedureStream);
+            fscanf(ProcedureStream,"%d\t%s\t%f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
+            if(TempProcedure.Code == code)
+            {
+                fseek(ProcedureStream,Position+1,SEEK_SET);
+                fprintf(ProcedureStream,"%d\t%s\t%.2f\n",TempProcedure.Code,TempProcedure.Name,fee);
+                return 1;
+            }
+        }
+    }
+    fclose(ProcedureStream);
+    return 1;
+}
+void ShowVerifyUpdateProcedureFee(void)
+{
+    gotoxy(30,19);
+    printf("[1]Save");
+    gotoxy(42,19);
+    printf("[2]Cancel");
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
+}
+int VerifyUpdateProcedureFeeMenuController(char option,int code,float fee)
+{
+    switch(option)
+    {
+        case '1':
+            DefaultService();
+            if(UpdateProcedureFee(code,fee)==1)
+            {
+                gotoxy(30,5);
+                printf("Fee Updated Successfully!");
+                FindAndShowProcedure(code,25,9);
+                ShowAfterUpdateFeeMenu();
+                do{}while(AfterUpdateFeeMenuController(OptionDriver(30,21,NUMERIC))==0);
+            }
+            else
+            {
+                gotoxy(27,8);
+                printf("Error: Could not access file");
+                ShowAfterUpdateFeeMenu();
+                do{}while(AfterUpdateFeeMenuController(OptionDriver(30,21,NUMERIC))==0);
+            }
+        break;
+        case '2':
+            ShowUpdateFeesMenu();
+            do{}while(UpdateFeesMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -1335,13 +1466,62 @@ int UpdateFeesMenuController(char option)
     }
     return 0;
 }
-
-
-
+void ShowAfterUpdateFeeMenu(void)
+{
+    gotoxy(25,18);
+    printf("[1]Update Fees");
+    gotoxy(42,18);
+    printf("[Esc]Return To Main Menu");
+}
+int AfterUpdateFeeMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+            ShowUpdateFeesMenu();
+            do{}while(UpdateFeesMenuController(OptionDriver(30,21,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
+int FindAndShowProcedure(int code,int x, int y)
+{
+    FILE * ProcedureStream;
+    Procedure TempProcedure;
+    ProcedureStream = fopen("./DataFiles/Procedure.txt","r");
+    if(!ProcedureStream)
+    {
+        return 0;
+    }
+    else
+    {
+        char ProcedureHeader[3][20];
+        fscanf(ProcedureStream,"%s\t%s\t%s",ProcedureHeader[0],ProcedureHeader[1],ProcedureHeader[2]);
+        while(!feof(ProcedureStream))
+        {
+            fscanf(ProcedureStream,"%d\t%s\t%f",&TempProcedure.Code,TempProcedure.Name,&TempProcedure.Cost);
+            if(TempProcedure.Code == code)
+            {
+                gotoxy(x,y);
+                printf("Code   : %d",TempProcedure.Code);
+                gotoxy(x,y+2);
+                printf("Name   : %s",TempProcedure.Name);
+                gotoxy(x,y+4);
+                printf("Fee    : $%.2f",TempProcedure.Cost);
+                return 1;
+            }
+        }
+    }
+    fclose(ProcedureStream);
+    return 1;
+}
 void GenIncomeReport (void)
 {
 }
-
 void DocIncomeReport (void)
 {
 }
