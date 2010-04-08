@@ -1522,17 +1522,41 @@ int FindAndShowProcedure(int code,int x, int y)
 }
 void GenIncomeReport (void)
 {
+     DefaultService();
+    gotoxy(27,5);
+    printf("GENERAL INCOME REPORT");
+
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 }
 void DocIncomeReport (void)
 {
+     DefaultService();
+    gotoxy(27,5);
+    printf("DOCTORS INCOME REPORT");
+
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 }
 
 void DocReport (void)
 {
+     DefaultService();
+    gotoxy(27,5);
+    printf("DOCTORS REPORT");
+
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 }
 
 void PatientNotiReport (void)
 {
+    DefaultService();
+    gotoxy(27,5);
+    printf("PATIENT NOTIFICATION REPORT");
+
+    gotoxy(1,23);
+    printf("[Esc]Return To Main Menu");
 }
 
 /*
