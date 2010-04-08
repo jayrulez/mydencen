@@ -362,7 +362,7 @@ char OptionDriver(int x,int y,int OptionType)
     char option;
     gotoxy(x,y);
     printf("Option: ");
-    while(true)
+    while(1)
     {
 
         KeyRecord = GetChar();
@@ -1185,7 +1185,9 @@ int UpdatePatientMenuController(char option,Patient TempPatient)
             do{}while(PatientsMenuController(OptionDriver(30,18,NUMERIC))==0);
         break;
         case (char)VK_LEFT:
-
+            UpdatePatient(PatientSearch());
+            ShowSearchPatientMenu();
+            do{}while(ViewPatientRecordMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
