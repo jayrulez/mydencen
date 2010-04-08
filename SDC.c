@@ -82,7 +82,13 @@ int MainMenuController(char);
 //Report Menu
 void ShowReportsMenu(void);
 int ReportsMenuController(char);
-
+void ShowInReportMenu(void);
+int InReportMenuController(char);
+void ShowDocReportSelectMenu(void);
+int DocReportSelectMenuController(char);
+void DocReport(char);
+void GenIncomeReport(void);
+void PatientNotiReport(void);
 //PatientsMenu
 void ShowPatientsMenu(void);
 int PatientsMenuController(char);
@@ -364,7 +370,6 @@ char OptionDriver(int x,int y,int OptionType)
     printf("Option: ");
     while(1)
     {
-
         KeyRecord = GetChar();
         option = KeyRecord.Event.KeyEvent.uChar.AsciiChar;
         if(OptionType==NUMERIC)
@@ -454,20 +459,23 @@ int ReportsMenuController(char option)//Routes the entered value to a function
     switch(option)
     {
         case '1':
-        PatientNotiReport();
-            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+            PatientNotiReport();
+            ShowInReportMenu();
+            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '2':
-        DocReport();
-            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+            ShowDocReportSelectMenu();
+            do{}while(DocReportSelectMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '3':
-        GenIncomeReport();
-            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+            GenIncomeReport();
+            ShowInReportMenu();
+            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '4':
-        DocIncomeReport();
-            do{}while(PatientsMenuController(OptionDriver(30,17,NUMERIC))==0);
+            DocIncomeReport();
+            ShowInReportMenu();
+            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -1294,15 +1302,15 @@ int ViewPatientRecordMenuController(char option)
 void ShowDocReportSelectMenu(void)
 {
     DefaultService();
-    gotoxy(25,5);
+    gotoxy(28,5);
     printf("DOCTOR'S REPORT MENU");
-    gotoxy(20,8);
+    gotoxy(31,8);
     printf("Select Doctor");
-    gotoxy(29,8);
+    gotoxy(15,12);
     printf("[1]Dental Surgeon");
-    gotoxy(38,8);
-    printf("[2] Orthodontist");
-	gotoxy(20,13);
+    gotoxy(36,12);
+    printf("[2]Orthodontist");
+	gotoxy(55,12);
     printf("[3]Dentist");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
@@ -1529,29 +1537,27 @@ int FindAndShowProcedure(int code,int x, int y)
 }
 void GenIncomeReport (void)
 {
-     DefaultService();
+    DefaultService();
     gotoxy(27,5);
     printf("GENERAL INCOME REPORT");
 
+
+}
+void ShowInReportMenu(void)
+{
     gotoxy(30,23);
     printf("[<-]Reports Menu");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
-
 }
-int GenIncomeReportMenuController(char option)
+int InReportMenuController(char option)
 {
     switch(option)
     {
-        case '1':
-
-        break;
-        case '2':
-
         break;
         case (char)VK_LEFT:
             ShowReportsMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+            do{}while(ReportsMenuController(OptionDriver(30,18,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -1560,65 +1566,56 @@ int GenIncomeReportMenuController(char option)
     }
     return 0;
 }
+
 void DocIncomeReport (void)
 {
-     DefaultService();
+    DefaultService();
     gotoxy(27,5);
     printf("DOCTORS INCOME REPORT");
-
-    gotoxy(30,23);
-    printf("[<-]Reports Menu");
-    gotoxy(1,23);
-    printf("[Esc]Return To Main Menu");
 }
 
-int DocIncomeMenuController(char option)
+void DocReport(char option)
 {
-    switch(option)
+    DefaultService();
+    if(option=='1')
     {
-        case '1':
-
-        break;
-        case '2':
-
-        break;
-        case (char)VK_LEFT:
-            ShowReportsMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
-        break;
-        case (char)VK_ESCAPE:
-            ShowMainMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
-        break;
+        gotoxy(30,5);
+        printf("Dental Surgeon Report");
     }
-    return 0;
+    else if(option=='2')
+    {
+        gotoxy(28,5);
+        printf("Orthodontist Report");
+    }
+    else
+    {
+        gotoxy(30,5);
+        printf("Dentist Report");
+    }
 }
 
-void DocReport (void)
-{
-     DefaultService();
-    gotoxy(27,5);
-    printf("DOCTORS REPORT");
-
-    gotoxy(30,23);
-    printf("[<-]Reports Menu");
-    gotoxy(1,23);
-    printf("[Esc]Return To Main Menu");
-}
-
-int DocReportMenuController(char option)
+int DocReportSelectMenuController(char option)
 {
     switch(option)
     {
         case '1':
-
+            DocReport(option);
+            ShowInReportMenu();
+            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '2':
-
+            DocReport(option);
+            ShowInReportMenu();
+            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
+        break;
+        case '3':
+            DocReport(option);
+            ShowInReportMenu();
+            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case (char)VK_LEFT:
             ShowReportsMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+            do{}while(ReportsMenuController(OptionDriver(30,18,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -1640,29 +1637,6 @@ void PatientNotiReport(void)
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 }
-
-int PatientNotiMenuController(char option)
-{
-    switch(option)
-    {
-        case '1':
-
-        break;
-        case '2':
-
-        break;
-        case (char)VK_LEFT:
-            ShowReportsMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
-        break;
-        case (char)VK_ESCAPE:
-            ShowMainMenu();
-            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
-        break;
-    }
-    return 0;
-}
-
 /*
  * Gets a character from the keyboard
  * no parameters
