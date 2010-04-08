@@ -82,6 +82,7 @@ int MainMenuController(char);
 //Report Menu
 void ShowReportsMenu(void);
 int ReportsMenuController(char);
+
 //PatientsMenu
 void ShowPatientsMenu(void);
 int PatientsMenuController(char);
@@ -143,6 +144,10 @@ void GenIncomeReport (void);
 void DocIncomeReport (void);
 void DocReport (void);
 void PatientNotiReport (void);
+int GenIncomeMenuController(char);
+int DocIncomeMenuController(char);
+int DocReportMenuController(char);
+int PatientNotiMenuController(char);
 
 
 int main(void)
@@ -1526,8 +1531,32 @@ void GenIncomeReport (void)
     gotoxy(27,5);
     printf("GENERAL INCOME REPORT");
 
+    gotoxy(30,23);
+    printf("[<-]Reports Menu");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
+
+}
+int GenIncomeReportMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+
+        break;
+        case '2':
+
+        break;
+        case (char)VK_LEFT:
+            ShowReportsMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
 }
 void DocIncomeReport (void)
 {
@@ -1535,8 +1564,32 @@ void DocIncomeReport (void)
     gotoxy(27,5);
     printf("DOCTORS INCOME REPORT");
 
+    gotoxy(30,23);
+    printf("[<-]Reports Menu");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
+}
+
+int DocIncomeMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+
+        break;
+        case '2':
+
+        break;
+        case (char)VK_LEFT:
+            ShowReportsMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
 }
 
 void DocReport (void)
@@ -1545,18 +1598,67 @@ void DocReport (void)
     gotoxy(27,5);
     printf("DOCTORS REPORT");
 
+    gotoxy(30,23);
+    printf("[<-]Reports Menu");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
 }
 
-void PatientNotiReport (void)
+int DocReportMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+
+        break;
+        case '2':
+
+        break;
+        case (char)VK_LEFT:
+            ShowReportsMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
+}
+
+
+void PatientNotiReport(void)
 {
     DefaultService();
     gotoxy(27,5);
     printf("PATIENT NOTIFICATION REPORT");
 
+    gotoxy(30,23);
+    printf("[<-]Reports Menu");
     gotoxy(1,23);
     printf("[Esc]Return To Main Menu");
+}
+
+int PatientNotiMenuController(char option)
+{
+    switch(option)
+    {
+        case '1':
+
+        break;
+        case '2':
+
+        break;
+        case (char)VK_LEFT:
+            ShowReportsMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+        case (char)VK_ESCAPE:
+            ShowMainMenu();
+            do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
+        break;
+    }
+    return 0;
 }
 
 /*
