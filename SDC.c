@@ -283,7 +283,7 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
             DefaultDoctor.Phone,DefaultDoctor.Specialty);
 
-            DefaultDoctor.Id=2004;strcpy(DefaultDoctor.Fname,"Tony");strcpy(DefaultDoctor.Lname,"Montana");
+           /* DefaultDoctor.Id=2004;strcpy(DefaultDoctor.Fname,"Tony");strcpy(DefaultDoctor.Lname,"Montana");
             strcpy(DefaultDoctor.Phone,"876-988-2937");strcpy(DefaultDoctor.Specialty,"na");
             fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
             DefaultDoctor.Phone,DefaultDoctor.Specialty);
@@ -291,7 +291,7 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
             DefaultDoctor.Id=2005;strcpy(DefaultDoctor.Fname,"Emanuel");strcpy(DefaultDoctor.Lname,"Robbery");
             strcpy(DefaultDoctor.Phone,"876-589-0012");strcpy(DefaultDoctor.Specialty,"na");
             fprintf(DoctorStream,"%d\t%s\t%s\t%d\t%s\n",DefaultDoctor.Id,DefaultDoctor.Fname,DefaultDoctor.Lname,
-            DefaultDoctor.Phone,DefaultDoctor.Specialty);
+            DefaultDoctor.Phone,DefaultDoctor.Specialty);*/
 
             Sleep(700);
             gotoxy(30,15);
@@ -689,7 +689,7 @@ int AddNewPatient (Patient *NewPatient)
     NewPatient->Id = 1;
     strcpy(NewPatient->NextAppDate,"N/A");
     strcpy(NewPatient->LastTreatment,"N/A");
-    NewPatient->CardBalance = 4000.00;
+    NewPatient->CardBalance = 15000.00;
     PatientStream = fopen("./DataFiles/Patients.txt","r");
     if(!PatientStream)
     {
