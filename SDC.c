@@ -1603,7 +1603,7 @@ int DocIncomeReport (void)
 {
     int x=10;
     int y=6;
-    system("pause");
+    system("cls");
     gotoxy(27,2);
     printf("DOCTORS INCOME REPORT");
     FILE *docFPtr = fopen("./DataFiles/Doctors.txt","r");
