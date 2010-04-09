@@ -75,21 +75,17 @@ typedef struct DOCTOR
 
 //Create Files
 int CreateFiles(void);
+
 //Welcome
 void WelcomeScreen(void);
-// Menus
+
+//Login
+int LoginMenu(void);
+
+// main menu
 void ShowMainMenu(void);
 int MainMenuController(char);
-//Report Menu
-void ShowReportsMenu(void);
-int ReportsMenuController(char);
-void ShowInReportMenu(void);
-int InReportMenuController(char);
-void ShowDocReportSelectMenu(void);
-int DocReportSelectMenuController(char);
-void DocReport(char);
-void GenIncomeReport(void);
-void PatientNotiReport(void);
+
 //PatientsMenu
 void ShowPatientsMenu(void);
 int PatientsMenuController(char);
@@ -121,8 +117,21 @@ void ShowUpdatePatientMenu(void);
 int UpdatePatientMenuController(char,Patient);
 int UpdateRecordInPatientFile(Patient);
 void ShowSearchPatientMenu(void);
-//DoctorReportMenu
+
+//Reports
+void GenIncomeReport (void);
+void DocReport (void);
+void PatientNotiReport (void);
+int DocIncomeReport(void);
+//Report Menu
+void ShowReportsMenu(void);
+int ReportsMenuController(char);
+void ShowInReportMenu(int);
+int InReportMenuController(char);
+void ShowDocReportSelectMenu(void);
+int DocReportSelectMenuController(char);
 void ShowDocReportSelect(void);
+
 //Update Fees Menu
 void ShowUpdateFeesMenu(void);
 int UpdateFeesMenuController(char);
@@ -132,30 +141,16 @@ int VerifyUpdateProcedureFee(int,float);
 void ShowAfterUpdateFeeMenu(void);
 int AfterUpdateFeeMenuController(char);
 int FindAndShowProcedure(int ,int, int);
-char* maskedInput(void);
-
-
-//Login
-int LoginMenu(void);
 
 //Tools
 KEY_RECORD GetChar(void);
 char OptionDriver(int,int,int);
 void gotoxy(int, int);
-void ScreenFrame(void);
+void ScreenFrame(int);
 
 //Services
 void DefaultService(void);
-
-//Reports
-void GenIncomeReport (void);
-void DocIncomeReport (void);
-void DocReport (void);
-void PatientNotiReport (void);
-int GenIncomeMenuController(char);
-int DocIncomeMenuController(char);
-int DocReportMenuController(char);
-int PatientNotiMenuController(char);
+int DynamicDefaultService(int);
 
 
 int main(void)
@@ -498,7 +493,7 @@ int ReportsMenuController(char option)//Routes the entered value to a function
     {
         case '1':
             PatientNotiReport();
-            ShowInReportMenu();
+            ShowInReportMenu(0);
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '2':
@@ -507,12 +502,11 @@ int ReportsMenuController(char option)//Routes the entered value to a function
         break;
         case '3':
             GenIncomeReport();
-            ShowInReportMenu();
+            ShowInReportMenu(0);
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '4':
-            DocIncomeReport();
-            ShowInReportMenu();
+            ShowInReportMenu(DynamicDefaultService(DocIncomeReport()));
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
@@ -1581,11 +1575,11 @@ void GenIncomeReport (void)
 
 
 }
-void ShowInReportMenu(void)
+void ShowInReportMenu(int y)
 {
-    gotoxy(30,23);
+    gotoxy(45,y-1);
     printf("[<-]Reports Menu");
-    gotoxy(1,23);
+    gotoxy(15,y-1);
     printf("[Esc]Return To Main Menu");
 }
 int InReportMenuController(char option)
@@ -1605,10 +1599,12 @@ int InReportMenuController(char option)
     return 0;
 }
 
-void DocIncomeReport (void)
+int DocIncomeReport (void)
 {
-    DefaultService();
-    gotoxy(27,5);
+    int x=10;
+    int y=6;
+    system("pause");
+    gotoxy(27,2);
     printf("DOCTORS INCOME REPORT");
     FILE *docFPtr = fopen("./DataFiles/Doctors.txt","r");
     Doctor doc;
@@ -1624,7 +1620,8 @@ void DocIncomeReport (void)
             char patientLName[20];
             char patientTreatment[8];
             float feeCharged = 0;
-            float amountPerPatient = 0;
+            float amountCardPerPatient = 0;
+            float amountCashPerPatient = 0;
 
             fscanf(docFPtr,"%i %s %s %s %s",&doc.Id, doc.Fname, doc.Lname, doc.Phone, doc.Specialty);
             FILE * visitFPtr = fopen("./DataFiles/PatientVisit.txt","r");
@@ -1662,18 +1659,35 @@ void DocIncomeReport (void)
                             //close(patFPtr);
                         }
                     }
-                    amountPerPatient = NewVisit.VisitPayment.card + NewVisit.VisitPayment.cash;
+                    amountCardPerPatient += NewVisit.VisitPayment.card;
+                    amountCashPerPatient += NewVisit.VisitPayment.cash;
                 }
                 //close(visitFPtr);
             }else{
-                // cannot read cisit data
+                // cannot read visit data
             }
             //print records
+            gotoxy(x,y);
+            printf("Doctor Id: %d",doc.Id);
+            y+=1;
+            gotoxy(x,y);
+            printf("Doctor Name: %s %s",doc.Fname,doc.Lname);
+            y+=1;
+            gotoxy(x,y);
+            printf("Total Patients: %d",totalNumOfPatients);
+            y+=1;
+            gotoxy(x,y);
+            printf("Total fees collected: $%.2f",amountCashPerPatient);
+            y+=1;
+            gotoxy(x,y);
+            printf("Total Insurance fees: $%.2f",amountCardPerPatient);
+            y+=3;
         }
-        //close(docFPtr);
+        fclose(docFPtr);
     }else{
         // cannot read doctor data
     }
+    return y+3;
 }
 
 void DocReport(char option)
@@ -1702,17 +1716,17 @@ int DocReportSelectMenuController(char option)
     {
         case '1':
             DocReport(option);
-            ShowInReportMenu();
+            ShowInReportMenu(0);
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '2':
             DocReport(option);
-            ShowInReportMenu();
+            ShowInReportMenu(0);
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '3':
             DocReport(option);
-            ShowInReportMenu();
+            ShowInReportMenu(0);
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case (char)VK_LEFT:
@@ -1734,10 +1748,6 @@ void PatientNotiReport(void)
     gotoxy(27,5);
     printf("PATIENT NOTIFICATION REPORT");
 
-    gotoxy(30,23);
-    printf("[<-]Reports Menu");
-    gotoxy(1,23);
-    printf("[Esc]Return To Main Menu");
 }
 /*
  * Gets a character from the keyboard
@@ -1781,16 +1791,16 @@ void gotoxy(int x, int y)
     //set the cursor position based on the above x and y values
     SetConsoleCursorPosition(handle,CursorCoord);
 }
-void ScreenFrame(void)//Draws screen borders
+void ScreenFrame(int Vertical)//Draws screen borders
 {
     for(int x=0;x<80;x++)
     {
         gotoxy(x,0);
         printf("%c",(unsigned char) 205);
-        gotoxy(x,24);
+        gotoxy(x,Vertical);
         printf("%c",(unsigned char) 205);
     }
-    for(int y=0;y<24;y++)
+    for(int y=0;y<Vertical;y++)
     {
         gotoxy(0,y);
         printf("%c",(unsigned char) 186);
@@ -1801,14 +1811,25 @@ void ScreenFrame(void)//Draws screen borders
     printf("%c",(unsigned char)201);
     gotoxy(79,0);
     printf("%c",(unsigned char)187);
-    gotoxy(0,24);
+    gotoxy(0,Vertical);
     printf("%c",(unsigned char)200);
-    gotoxy(79,24);
+    gotoxy(79,Vertical);
     printf("%c",(unsigned char)188);
     gotoxy(0,0);
 }
 void DefaultService(void)//Sets up the screen for each new menu
 {
     system("cls");
-    ScreenFrame();
+    ScreenFrame(24);
+}
+int DynamicDefaultService(int y)
+{
+    if(y<=24)
+    {
+        ScreenFrame(24);
+        return 24;
+    }
+    else
+        ScreenFrame(y);
+    return y;
 }
