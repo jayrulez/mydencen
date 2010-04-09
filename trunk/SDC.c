@@ -147,6 +147,7 @@ KEY_RECORD GetChar(void);
 char OptionDriver(int,int,int);
 void gotoxy(int, int);
 void ScreenFrame(int);
+char* maskedInput(unsigned int);
 
 //Services
 void DefaultService(void);
