@@ -126,7 +126,7 @@ int DocIncomeReport(void);
 //Report Menu
 void ShowReportsMenu(void);
 int ReportsMenuController(char);
-void ShowInReportMenu(int);
+int ShowInReportMenu(int);
 int InReportMenuController(char);
 void ShowDocReportSelectMenu(void);
 int DocReportSelectMenuController(char);
@@ -480,8 +480,8 @@ int ReportsMenuController(char option)//Routes the entered value to a function
             do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
         break;
         case '4':
-            ShowInReportMenu(DynamicDefaultService(DocIncomeReport()));
-            do{}while(InReportMenuController(OptionDriver(30,17,NUMERIC))==0);
+            //ShowInReportMenu(DynamicDefaultService(DocIncomeReport()));
+            do{}while(InReportMenuController(OptionDriver(30,ShowInReportMenu(DynamicDefaultService(DocIncomeReport()))-2,NUMERIC))==0);
         break;
         case (char)VK_ESCAPE:
             ShowMainMenu();
@@ -1549,12 +1549,13 @@ void GenIncomeReport (void)
 
 
 }
-void ShowInReportMenu(int y)
+int ShowInReportMenu(int y)
 {
     gotoxy(45,y-1);
     printf("[<-]Reports Menu");
     gotoxy(15,y-1);
     printf("[Esc]Return To Main Menu");
+    return y-1;
 }
 int InReportMenuController(char option)
 {
@@ -1630,6 +1631,7 @@ int DocIncomeReport (void)
                                     strcpy(patientFName, TempPatient.Fname);
                                     strcpy(patientLName, TempPatient.Lname);
                                     totalNumOfPatients++;
+                                    break;
                                 }
                             }
                             fclose(patFPtr);
@@ -1736,7 +1738,7 @@ KEY_RECORD GetChar(void)
     DWORD AmountRead;
     KEY_RECORD KeyRecord;
     Handle = GetStdHandle(STD_INPUT_HANDLE);
-    while(true)
+    while(1)
     {
         ReadConsoleInput(Handle,&KeyRecord,1,&AmountRead);
         if(KeyRecord.EventType==KEY_EVENT)
@@ -1751,8 +1753,8 @@ KEY_RECORD GetChar(void)
 }
 /*
  *
- * 
- * 
+ *
+ *
 */
 char OptionDriver(int x,int y,int OptionType)
 {
