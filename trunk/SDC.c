@@ -1867,9 +1867,13 @@ void DefaultService(void)//Sets up the screen for each new menu
 {
     system("cls");
     ScreenFrame(24);
+    gotoxy(1,1);
+    printf("SMILES DENTAL CENTRE %c",1);
 }
 int DynamicDefaultService(int y)
 {
+    gotoxy(1,1);
+    printf("SMILES DENTAL CENTRE %c",1);
     if(y<=24)
     {
         ScreenFrame(24);
