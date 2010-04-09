@@ -156,6 +156,7 @@ int DynamicDefaultService(int);
 
 int main(void)
 {
+    WelcomeScreen();
     CreateFiles();
     LoginMenu();
     ShowMainMenu();
@@ -347,9 +348,6 @@ int CreateFiles(void)//Creates Data Files Directory & txt files with default val
         }
     }
     return 1;
-}
-void WelcomeScreen(void)
-{
 }
 /*
  * Login Menu
@@ -1830,6 +1828,41 @@ void ScreenFrame(int Vertical)//Draws screen borders
     printf("%c",(unsigned char)188);
     gotoxy(0,0);
 }
+
+void WelcomeScreen(void)
+{
+
+    int x,y;
+    char i=1;
+    for(x=1;x<=80;x++)
+    {
+        printf(" %c ", i);
+        y=x;
+        if(y==80)
+    break;
+    }
+
+    gotoxy(27,5);
+     printf("\n\n\n\n\t\t\t\tSMILES DENTAL CENTRE");
+     printf("\n\n\n\t\t\t System Standby...Press Any Key to Log in.");
+     printf("\n\n\n\n\n\n\n\n\n\n");
+
+
+for(x=1;x<=79;x++)
+{
+printf(" %c ", i);
+y=x;
+if(y==79)
+break;
+}
+ getch();
+
+
+}
+
+
+
+
 void DefaultService(void)//Sets up the screen for each new menu
 {
     system("cls");
