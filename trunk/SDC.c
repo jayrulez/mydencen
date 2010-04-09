@@ -17,6 +17,7 @@
 //Admin Login
 #define AdminName "admin"
 #define AdminPassword "12345"
+#define PASSWORD_LENGTH 30
 
 //User Type
 #define USER_ADMIN 1001
@@ -131,6 +132,7 @@ int VerifyUpdateProcedureFee(int,float);
 void ShowAfterUpdateFeeMenu(void);
 int AfterUpdateFeeMenuController(char);
 int FindAndShowProcedure(int ,int, int);
+char* maskedInput(void);
 
 
 //Login
@@ -164,6 +166,42 @@ int main(void)
     do{}while(MainMenuController(OptionDriver(30,18,NUMERIC))==0);
     return 0;
 }
+
+char* maskedInput(void)
+{
+    KEY_RECORD input;
+    char buffer[PASSWORD_LENGTH];
+    static char ret[PASSWORD_LENGTH];
+
+    int position = 0;
+    do
+    {
+        input = GetChar();
+        if((isalnum(input.Event.KeyEvent.uChar.AsciiChar) || ispunct(input.Event.KeyEvent.uChar.AsciiChar) || input.Event.KeyEvent.uChar.AsciiChar == VK_SPACE) && position < PASSWORD_LENGTH)
+        {
+            printf("*");
+            buffer[position] = input.Event.KeyEvent.uChar.AsciiChar;
+            position++;
+        }
+        if(input.Event.KeyEvent.wVirtualKeyCode == VK_BACK)
+        {
+            if(position > 0)
+            {
+                position--;
+                buffer[position] = '\0';
+                printf("\b \b");
+            }
+        }
+        if(input.Event.KeyEvent.uChar.AsciiChar == VK_RETURN)
+        {
+            buffer[position] = '\0';
+            strcpy(ret, buffer);
+
+            return ret;
+        }
+    }while(1);
+}
+
 int CreateFiles(void)//Creates Data Files Directory & txt files with default values
 {
     FILE *PatientStream;
@@ -323,7 +361,7 @@ void WelcomeScreen(void)
 int LoginMenu(void) //login menu compares username and password
 {
     char UserName[50];
-    char Password[15];
+    char Password[PASSWORD_LENGTH];
     int attempt = 0;
     int incorrect =0;
     do{
@@ -343,7 +381,7 @@ int LoginMenu(void) //login menu compares username and password
         gotoxy(35,12);
         scanf("%s",UserName);
         gotoxy(35,14);
-        scanf("%s",Password);
+        strcpy(Password, maskedInput());
 
         if(strcmp(UserName,AdminName)==0 && strcmp(AdminPassword,Password)==0)
         {
@@ -1572,6 +1610,70 @@ void DocIncomeReport (void)
     DefaultService();
     gotoxy(27,5);
     printf("DOCTORS INCOME REPORT");
+    FILE *docFPtr = fopen("./DataFiles/Doctors.txt","r");
+    Doctor doc;
+    if(docFPtr)
+    {
+        char DoctorHeader[5][40];
+        fscanf(docFPtr,"%s\t%s\t%s\t%s\t%s",DoctorHeader[0],DoctorHeader[1],DoctorHeader[2],DoctorHeader[3],DoctorHeader[4]);
+
+        while(!feof(docFPtr))
+        {
+            int totalNumOfPatients = 0;
+            char patientFName[20];
+            char patientLName[20];
+            char patientTreatment[8];
+            float feeCharged = 0;
+            float amountPerPatient = 0;
+
+            fscanf(docFPtr,"%i %s %s %s %s",&doc.Id, doc.Fname, doc.Lname, doc.Phone, doc.Specialty);
+            FILE * visitFPtr = fopen("./DataFiles/PatientVisit.txt","r");
+            if(visitFPtr)
+            {
+                char VisitHeader[5][30] = {{"Patient_Id"},{"Doctor_Id"},{"Procedure_Code"},{"Card_Payment($)"},{"Cash_Payment($)"}};
+                Visit NewVisit;
+                fscanf(visitFPtr,"%s\t%s\t%s\t%s\t%s",VisitHeader[0],VisitHeader[1],VisitHeader[2],VisitHeader[3],VisitHeader[4]);
+                while(!feof(visitFPtr))
+                {
+                    fscanf(visitFPtr,"%d\t%d\t%d\t%f\t%f",&NewVisit.PatientID,&NewVisit.DoctorID,
+                    &NewVisit.ProcedureCode,&NewVisit.VisitPayment.card,&NewVisit.VisitPayment.cash);
+                    if(doc.Id == NewVisit.DoctorID)
+                    {
+                        FILE *patFPtr = fopen("./DataFiles/Patients.txt","r");
+                        if(patFPtr)
+                        {
+                            char PatientHeader[9][40];
+                            fscanf(patFPtr,"%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s",PatientHeader[0],PatientHeader[1],PatientHeader[2],
+                            PatientHeader[3],PatientHeader[4],PatientHeader[5],PatientHeader[6],PatientHeader[7],PatientHeader[8]);
+                            Patient TempPatient;
+                            while(!feof(patFPtr))
+                            {
+                                fscanf(patFPtr,"%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%f",&TempPatient.Id,TempPatient.Fname,TempPatient.Lname,
+                                TempPatient.Address,TempPatient.Phone,TempPatient.Allergies,TempPatient.LastTreatment,
+                                TempPatient.NextAppDate,&TempPatient.CardBalance);
+
+                                if(NewVisit.PatientID == TempPatient.Id)
+                                {
+                                    strcpy(patientFName, TempPatient.Fname);
+                                    strcpy(patientLName, TempPatient.Lname);
+                                    totalNumOfPatients++;
+                                }
+                            }
+                            //close(patFPtr);
+                        }
+                    }
+                    amountPerPatient = NewVisit.VisitPayment.card + NewVisit.VisitPayment.cash;
+                }
+                //close(visitFPtr);
+            }else{
+                // cannot read cisit data
+            }
+            //print records
+        }
+        //close(docFPtr);
+    }else{
+        // cannot read doctor data
+    }
 }
 
 void DocReport(char option)
