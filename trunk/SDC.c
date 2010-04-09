@@ -395,33 +395,7 @@ int LoginMenu(void) //login menu compares username and password
     exit(0);
     return 0;
 }
-char OptionDriver(int x,int y,int OptionType)
-{
-    KEY_RECORD KeyRecord;
-    char option;
-    gotoxy(x,y);
-    printf("Option: ");
-    while(1)
-    {
-        KeyRecord = GetChar();
-        option = KeyRecord.Event.KeyEvent.uChar.AsciiChar;
-        if(OptionType==NUMERIC)
-        {
-            if(isdigit(option))
-                break;
-            else
-                return KeyRecord.Event.KeyEvent.wVirtualKeyCode;
-        }
-        else if(OptionType==ALPHABETIC)
-        {
-            if(isalpha(option))
-                break;
-            else
-                return (char)KeyRecord.Event.KeyEvent.wVirtualKeyCode;
-        }
-    }
-    return option;
-}
+
 void ShowMainMenu(void)//Displays Main Menu on screen
 {
     DefaultService();
@@ -1623,7 +1597,7 @@ int DocIncomeReport (void)
             float amountCardPerPatient = 0;
             float amountCashPerPatient = 0;
 
-            fscanf(docFPtr,"%d %s %s %s %s",&doc.Id, doc.Fname, doc.Lname, doc.Phone, doc.Specialty);
+            fscanf(docFPtr,"%d\t%s\t%s\t%s\t%s",&doc.Id, doc.Fname, doc.Lname, doc.Phone, doc.Specialty);
             FILE * visitFPtr = fopen("./DataFiles/PatientVisit.txt","r");
             if(visitFPtr)
             {
@@ -1769,11 +1743,43 @@ KEY_RECORD GetChar(void)
         {
             if(KeyRecord.Event.KeyEvent.bKeyDown)
             {
-                return KeyRecord;//InputRecord.Event.KeyEvent.uChar.AsciiChar;
+                break;
             }
         }
     }
     return KeyRecord;
+}
+/*
+ *
+ * 
+ * 
+*/
+char OptionDriver(int x,int y,int OptionType)
+{
+    KEY_RECORD KeyRecord;
+    char option;
+    gotoxy(x,y);
+    printf("Option: ");
+    while(1)
+    {
+        KeyRecord = GetChar();
+        option = KeyRecord.Event.KeyEvent.uChar.AsciiChar;
+        if(OptionType==NUMERIC)
+        {
+            if(isdigit(option))
+                break;
+            else
+                return (char)KeyRecord.Event.KeyEvent.wVirtualKeyCode;
+        }
+        else if(OptionType==ALPHABETIC)
+        {
+            if(isalpha(option))
+                break;
+            else
+                return (char)KeyRecord.Event.KeyEvent.wVirtualKeyCode;
+        }
+    }
+    return option;
 }
 /*
  * Positions cursor in the cosole
