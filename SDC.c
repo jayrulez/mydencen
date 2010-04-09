@@ -162,17 +162,18 @@ int main(void)
     return 0;
 }
 
-char* maskedInput(void)
+char* maskedInput(unsigned int length = 80)
 {
     KEY_RECORD input;
-    char buffer[PASSWORD_LENGTH];
-    static char ret[PASSWORD_LENGTH];
+    char buffer[length];
+    static char* returnVal;
+    returnVal = (char*) malloc (length+1);
 
     int position = 0;
     do
     {
         input = GetChar();
-        if((isalnum(input.Event.KeyEvent.uChar.AsciiChar) || ispunct(input.Event.KeyEvent.uChar.AsciiChar) || input.Event.KeyEvent.uChar.AsciiChar == VK_SPACE) && position < PASSWORD_LENGTH)
+        if((isalnum(input.Event.KeyEvent.uChar.AsciiChar) || ispunct(input.Event.KeyEvent.uChar.AsciiChar) || input.Event.KeyEvent.uChar.AsciiChar == VK_SPACE) && position < length)
         {
             printf("*");
             buffer[position] = input.Event.KeyEvent.uChar.AsciiChar;
@@ -190,9 +191,9 @@ char* maskedInput(void)
         if(input.Event.KeyEvent.uChar.AsciiChar == VK_RETURN)
         {
             buffer[position] = '\0';
-            strcpy(ret, buffer);
+            strcpy(returnVal, buffer);
 
-            return ret;
+            return returnVal;
         }
     }while(1);
 }
@@ -376,7 +377,7 @@ int LoginMenu(void) //login menu compares username and password
         gotoxy(35,12);
         scanf("%s",UserName);
         gotoxy(35,14);
-        strcpy(Password, maskedInput());
+        strcpy(Password, maskedInput(PASSWORD_LENGTH));
 
         if(strcmp(UserName,AdminName)==0 && strcmp(AdminPassword,Password)==0)
         {
