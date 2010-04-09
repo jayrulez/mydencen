@@ -939,7 +939,7 @@ int ProcessVisitTransaction(Visit *NewVisit,Patient *ExistingPatient)
                 gotoxy(27,14);
                 printf("Cash Needed: $%.2f",CashCoverage);
                 fclose(ProcedureStream);
-                do{}while(PaymentOptionsMenuController(OptionDriver(30,21,NUMERIC),NewVisit,ExistingPatient));
+                do{}while(PaymentOptionsMenuController(OptionDriver(30,21,NUMERIC),NewVisit,ExistingPatient)==0);
                 break;
             }
         }
@@ -1623,15 +1623,17 @@ int DocIncomeReport (void)
             float amountCardPerPatient = 0;
             float amountCashPerPatient = 0;
 
-            fscanf(docFPtr,"%i %s %s %s %s",&doc.Id, doc.Fname, doc.Lname, doc.Phone, doc.Specialty);
+            fscanf(docFPtr,"%d %s %s %s %s",&doc.Id, doc.Fname, doc.Lname, doc.Phone, doc.Specialty);
             FILE * visitFPtr = fopen("./DataFiles/PatientVisit.txt","r");
             if(visitFPtr)
             {
                 char VisitHeader[5][30] = {{"Patient_Id"},{"Doctor_Id"},{"Procedure_Code"},{"Card_Payment($)"},{"Cash_Payment($)"}};
                 Visit NewVisit;
                 fscanf(visitFPtr,"%s\t%s\t%s\t%s\t%s",VisitHeader[0],VisitHeader[1],VisitHeader[2],VisitHeader[3],VisitHeader[4]);
+
                 while(!feof(visitFPtr))
                 {
+                    Visit NewVisit;
                     fscanf(visitFPtr,"%d\t%d\t%d\t%f\t%f",&NewVisit.PatientID,&NewVisit.DoctorID,
                     &NewVisit.ProcedureCode,&NewVisit.VisitPayment.card,&NewVisit.VisitPayment.cash);
                     if(doc.Id == NewVisit.DoctorID)
@@ -1656,13 +1658,13 @@ int DocIncomeReport (void)
                                     totalNumOfPatients++;
                                 }
                             }
-                            //close(patFPtr);
+                            fclose(patFPtr);
                         }
                     }
                     amountCardPerPatient += NewVisit.VisitPayment.card;
                     amountCashPerPatient += NewVisit.VisitPayment.cash;
                 }
-                //close(visitFPtr);
+                fclose(visitFPtr);
             }else{
                 // cannot read visit data
             }
