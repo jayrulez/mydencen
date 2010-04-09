@@ -168,7 +168,8 @@ char* maskedInput(unsigned int length = 80)
     KEY_RECORD input;
     char buffer[length];
     static char* returnVal;
-    returnVal = (char*) malloc (length+1);
+    returnVal = (char*) calloc (length, sizeof(char));
+    if(returnVal == NULL) exit(1);
 
     int position = 0;
     do
