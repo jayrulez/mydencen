@@ -495,7 +495,7 @@ int MainMenuController(char option)//Routes the entered value to a function
             do{}while(UpdateFeesMenuController(OptionDriver(30,21,NUMERIC))==0);
         break;
         case '4':
-            main();
+            exit(0);
         break;
     }
     return 0;
